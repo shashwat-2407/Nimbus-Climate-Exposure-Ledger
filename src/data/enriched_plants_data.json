@@ -1,0 +1,972 @@
+{
+  "metadata": {
+    "company": "Nimbus Cement Ltd",
+    "author": "Meera Iyer (Head of Sustainability)",
+    "purpose": "Climate Exposure & Transition Risk Ledger: ERA5 Baseline vs 2040 Delta Method",
+    "audit_version": "v4.0-bias-aware-audited",
+    "ccts_methodology_statement": "CCTS here = emissions \u00d7 % cut \u00d7 price, with no abatement and no growth to 2040, as a placeholder pending plant baselines.",
+    "climate_baseline_source": "ERA5-based reanalysis, not station data",
+    "calculation_rules": {
+      "ccts_methodology_statement": "CCTS here = emissions \u00d7 % cut \u00d7 price, with no abatement and no growth to 2040, as a placeholder pending plant baselines.",
+      "one_calculation_path_rule": "All summary portfolio figures are derived strictly as the exact sum of the plant rows. Exposure is split into three separate components: heat (API-based), water+coastal (judgement), and CCTS (assumption). It must not be aggregated into an unlabelled single headline.",
+      "flow_vs_stock_label_rule": "All annual financial figures represent annual flows and are strictly labelled as 'per year' (INR Crores / year). They must not be compared to the balance sheet asset base without this explicit rate distinction.",
+      "clinker_toggle_rule": "The Clinker Reallocation toggle changes only the inter-plant distribution of emissions and CCTS liabilities between mother kilns (P01, P06) and grinding units (P07, P08, P09). The fleet-wide total Scope 1 emissions (10,932.0 kt) and total CCTS liabilities remain strictly invariant.",
+      "flood_data_role": "Open-Meteo Flood API river discharge (m3/s) provides contextual hydrological background only and does NOT feed into the financial loss calculation. Lost operating days are derived strictly from the stated heat formula and the labelled judgement-based water and coastal assumptions.",
+      "heat_bias_correction_method": "Bias-aware delta method applied: Historical baseline (2015-2024) is sourced from ERA5-based reanalysis, not station data. 2040 projection is computed as historical baseline plus the CMIP6 multi-model ensemble change between 2015-2024 and 2036-2045 (delta method), per plant."
+    }
+  },
+  "assumptions_reference": "assumptions.json",
+  "portfolio_summary": {
+    "portfolio_totals": {
+      "total_plants": 9,
+      "total_cement_capacity_mtpa": 23.0,
+      "total_cement_output_fy2025_26_mt": 18.35,
+      "total_asset_value_inr_cr": 15450.0,
+      "total_revenue_fy2025_26_inr_cr": 9658.0,
+      "total_scope1_co2_kt": 10932.0,
+      "total_clinker_adjusted_scope1_kt": 10932.0,
+      "total_employees": 4550
+    },
+    "headline_exposure_summary_inr_cr_per_year": {
+      "baseline_2015_2024": {
+        "heat_component_api_based_inr_cr_per_year": 22.11,
+        "water_coastal_component_judgement_inr_cr_per_year": 24.79,
+        "ccts_component_assumption_inr_cr_per_year": 0.0,
+        "ccts_status": "unverified assumption (pending regulatory compliance schedule)",
+        "component_sum_inr_cr_per_year": 46.9,
+        "rate_vs_asset_base_pct_per_year": 0.3
+      },
+      "horizon_2040": {
+        "heat_component_api_based_inr_cr_per_year": 27.73,
+        "water_coastal_component_judgement_inr_cr_per_year": 51.98,
+        "ccts_component_case_10pct_annual_inr_cr_per_year": 163.99,
+        "ccts_component_case_3pct_annual_inr_cr_per_year": 49.19,
+        "component_sum_with_10pct_ccts_inr_cr_per_year": 243.7,
+        "component_sum_with_3pct_ccts_inr_cr_per_year": 128.9,
+        "rate_vs_asset_base_pct_per_year_case_10pct": 1.58,
+        "rate_vs_asset_base_pct_per_year_case_3pct": 0.83
+      },
+      "fleet_increase_attribution_baseline_to_2040": {
+        "delta_heat_component_inr_cr_per_year": 5.62,
+        "delta_water_coastal_component_inr_cr_per_year": 27.19,
+        "delta_ccts_10pct_component_inr_cr_per_year": 163.99,
+        "delta_total_10pct_inr_cr_per_year": 196.8,
+        "pct_of_increase_from_heat": 2.9,
+        "pct_of_increase_from_water_coastal": 13.8,
+        "pct_of_increase_from_ccts": 83.3,
+        "statement": "Under the stated assumptions, 83.3% of the increase is regulatory (CCTS liability)."
+      }
+    }
+  },
+  "plants": [
+    {
+      "plant_id": "P01",
+      "plant_name": "Nimbus Chittorgarh Works",
+      "town": "Chittorgarh",
+      "state": "Rajasthan",
+      "latitude": 24.8887,
+      "longitude": 74.6269,
+      "plant_type": "Integrated",
+      "cement_capacity_mtpa": 4.0,
+      "cement_output_fy2025_26_mt": 3.3,
+      "clinker_produced_fy2025_26_mt": 3.43,
+      "clinker_shipped_fy2025_26_mt": 1.12,
+      "asset_value_inr_cr": 3200.0,
+      "revenue_fy2025_26_inr_cr": 1749.0,
+      "employees": 820,
+      "water_source": "Groundwater",
+      "coastal": "N",
+      "notes": "Captive limestone mine; 40 MW captive coal power plant (its emissions are in scope1); ships clinker to P07 by rail",
+      "emissions": {
+        "unadjusted_direct_scope1_kt": 3125.0,
+        "clinker_reallocated_scope1_kt": 2104.59,
+        "clinker_adjustment_delta_kt": -1020.41,
+        "unadjusted_intensity_tco2_per_t": 0.947,
+        "adjusted_intensity_tco2_per_t": 0.6378
+      },
+      "physical_climate_data_bias_aware": {
+        "baseline_source": "ERA5-based reanalysis, not station data",
+        "baseline_period": "2015\u20132024 historical baseline",
+        "future_method": "Delta method (CMIP6 model change applied to ERA5 baseline)",
+        "days_above_40c_baseline": 30.8,
+        "days_above_40c_2040": 34.0,
+        "days_above_40c_model_delta": 3.2,
+        "days_above_40c_trend_falls": false,
+        "days_above_40c_trend_note": "projected increase",
+        "days_above_43c_baseline": 5.2,
+        "days_above_43c_2040": 12.5,
+        "days_above_43c_model_delta": 7.3,
+        "acute_heat_flag_over_25_days": false,
+        "hydrological_context_flood_api": {
+          "river_discharge_mean_m3s": 0.01,
+          "river_discharge_max_m3s": 0.01,
+          "feeds_money_calculation": false,
+          "note": "Open-Meteo Flood API river discharge provides hydrological context only and does NOT feed into downtime days or financial losses."
+        },
+        "water_and_coastal_assessment": {
+          "basin_name": "Banas River Basin",
+          "water_stress_score_1_to_5": 4.5,
+          "water_lost_days_baseline": 8.0,
+          "water_lost_days_2040": 16.0,
+          "coastal_lost_days_baseline": 0.0,
+          "coastal_lost_days_2040": 0.0,
+          "source_status": "judgement, not sourced"
+        }
+      },
+      "operational_downtime_days_by_hazard": {
+        "baseline_2015_2024": {
+          "heat_lost_days_api_based": 4.38,
+          "water_lost_days_judgement": 8.0,
+          "coastal_lost_days_judgement": 0.0,
+          "total_lost_operating_days": 12.38
+        },
+        "horizon_2040_delta_method": {
+          "heat_lost_days_api_based": 6.53,
+          "water_lost_days_judgement": 16.0,
+          "coastal_lost_days_judgement": 0.0,
+          "total_lost_operating_days": 22.53
+        }
+      },
+      "three_component_financial_exposure_inr_cr_per_year": {
+        "rates": {
+          "daily_revenue_inr_cr_per_day": 5.3,
+          "daily_ebitda_inr_cr_per_day": 1.0
+        },
+        "baseline_2015_2024": {
+          "heat_component_api_based_inr_cr_per_year": 4.38,
+          "water_coastal_component_judgement_inr_cr_per_year": 8.0,
+          "ccts_component_assumption_inr_cr_per_year": 0.0,
+          "ccts_baseline_status": "unverified assumption (pending regulatory compliance schedule)",
+          "component_breakdown_sum_inr_cr_per_year": 12.38
+        },
+        "horizon_2040": {
+          "heat_component_api_based_inr_cr_per_year": 6.53,
+          "water_coastal_component_judgement_inr_cr_per_year": 16.0,
+          "ccts_component_case_10pct_adjusted_inr_cr_per_year": 31.57,
+          "ccts_component_case_10pct_unadjusted_inr_cr_per_year": 46.88,
+          "ccts_component_case_3pct_adjusted_inr_cr_per_year": 9.47,
+          "component_breakdown_sum_10pct_adjusted_inr_cr_per_year": 54.1,
+          "component_breakdown_sum_3pct_adjusted_inr_cr_per_year": 32.0
+        },
+        "increase_attribution_baseline_to_2040_inr_cr_per_year": {
+          "delta_heat_component_inr_cr_per_year": 2.15,
+          "delta_water_coastal_component_inr_cr_per_year": 8.0,
+          "delta_ccts_10pct_component_inr_cr_per_year": 31.57,
+          "delta_total_10pct_inr_cr_per_year": 41.72,
+          "pct_of_increase_from_heat": 5.2,
+          "pct_of_increase_from_water_coastal": 19.2,
+          "pct_of_increase_from_ccts": 75.7,
+          "statement": "Under the stated assumptions, 75.7% of the increase is regulatory (CCTS liability)."
+        }
+      }
+    },
+    {
+      "plant_id": "P02",
+      "plant_name": "Nimbus Satna Works",
+      "town": "Satna",
+      "state": "Madhya Pradesh",
+      "latitude": 24.6005,
+      "longitude": 80.8322,
+      "plant_type": "Integrated",
+      "cement_capacity_mtpa": 3.5,
+      "cement_output_fy2025_26_mt": 2.85,
+      "clinker_produced_fy2025_26_mt": 2.05,
+      "clinker_shipped_fy2025_26_mt": 0.0,
+      "asset_value_inr_cr": 2700.0,
+      "revenue_fy2025_26_inr_cr": 1511.0,
+      "employees": 760,
+      "water_source": "Reservoir",
+      "coastal": "N",
+      "notes": "Captive limestone mine",
+      "emissions": {
+        "unadjusted_direct_scope1_kt": 1720.0,
+        "clinker_reallocated_scope1_kt": 1720.0,
+        "clinker_adjustment_delta_kt": 0.0,
+        "unadjusted_intensity_tco2_per_t": 0.6035,
+        "adjusted_intensity_tco2_per_t": 0.6035
+      },
+      "physical_climate_data_bias_aware": {
+        "baseline_source": "ERA5-based reanalysis, not station data",
+        "baseline_period": "2015\u20132024 historical baseline",
+        "future_method": "Delta method (CMIP6 model change applied to ERA5 baseline)",
+        "days_above_40c_baseline": 35.2,
+        "days_above_40c_2040": 37.1,
+        "days_above_40c_model_delta": 1.9,
+        "days_above_40c_trend_falls": false,
+        "days_above_40c_trend_note": "projected increase",
+        "days_above_43c_baseline": 7.0,
+        "days_above_43c_2040": 9.1,
+        "days_above_43c_model_delta": 2.1,
+        "acute_heat_flag_over_25_days": false,
+        "hydrological_context_flood_api": {
+          "river_discharge_mean_m3s": 0.03,
+          "river_discharge_max_m3s": 0.05,
+          "feeds_money_calculation": false,
+          "note": "Open-Meteo Flood API river discharge provides hydrological context only and does NOT feed into downtime days or financial losses."
+        },
+        "water_and_coastal_assessment": {
+          "basin_name": "Tons River Basin",
+          "water_stress_score_1_to_5": 3.5,
+          "water_lost_days_baseline": 3.0,
+          "water_lost_days_2040": 7.0,
+          "coastal_lost_days_baseline": 0.0,
+          "coastal_lost_days_2040": 0.0,
+          "source_status": "judgement, not sourced"
+        }
+      },
+      "operational_downtime_days_by_hazard": {
+        "baseline_2015_2024": {
+          "heat_lost_days_api_based": 5.27,
+          "water_lost_days_judgement": 3.0,
+          "coastal_lost_days_judgement": 0.0,
+          "total_lost_operating_days": 8.27
+        },
+        "horizon_2040_delta_method": {
+          "heat_lost_days_api_based": 5.98,
+          "water_lost_days_judgement": 7.0,
+          "coastal_lost_days_judgement": 0.0,
+          "total_lost_operating_days": 12.98
+        }
+      },
+      "three_component_financial_exposure_inr_cr_per_year": {
+        "rates": {
+          "daily_revenue_inr_cr_per_day": 4.5788,
+          "daily_ebitda_inr_cr_per_day": 0.8636
+        },
+        "baseline_2015_2024": {
+          "heat_component_api_based_inr_cr_per_year": 4.55,
+          "water_coastal_component_judgement_inr_cr_per_year": 2.59,
+          "ccts_component_assumption_inr_cr_per_year": 0.0,
+          "ccts_baseline_status": "unverified assumption (pending regulatory compliance schedule)",
+          "component_breakdown_sum_inr_cr_per_year": 7.14
+        },
+        "horizon_2040": {
+          "heat_component_api_based_inr_cr_per_year": 5.16,
+          "water_coastal_component_judgement_inr_cr_per_year": 6.05,
+          "ccts_component_case_10pct_adjusted_inr_cr_per_year": 25.8,
+          "ccts_component_case_10pct_unadjusted_inr_cr_per_year": 25.8,
+          "ccts_component_case_3pct_adjusted_inr_cr_per_year": 7.74,
+          "component_breakdown_sum_10pct_adjusted_inr_cr_per_year": 37.01,
+          "component_breakdown_sum_3pct_adjusted_inr_cr_per_year": 18.95
+        },
+        "increase_attribution_baseline_to_2040_inr_cr_per_year": {
+          "delta_heat_component_inr_cr_per_year": 0.61,
+          "delta_water_coastal_component_inr_cr_per_year": 3.46,
+          "delta_ccts_10pct_component_inr_cr_per_year": 25.8,
+          "delta_total_10pct_inr_cr_per_year": 29.87,
+          "pct_of_increase_from_heat": 2.0,
+          "pct_of_increase_from_water_coastal": 11.6,
+          "pct_of_increase_from_ccts": 86.4,
+          "statement": "Under the stated assumptions, 86.4% of the increase is regulatory (CCTS liability)."
+        }
+      }
+    },
+    {
+      "plant_id": "P03",
+      "plant_name": "Nimbus Chandrapur Works",
+      "town": "Chandrapur",
+      "state": "Maharashtra",
+      "latitude": 19.9615,
+      "longitude": 79.2961,
+      "plant_type": "Integrated",
+      "cement_capacity_mtpa": 3.0,
+      "cement_output_fy2025_26_mt": 2.4,
+      "clinker_produced_fy2025_26_mt": 1.78,
+      "clinker_shipped_fy2025_26_mt": 0.0,
+      "asset_value_inr_cr": 2300.0,
+      "revenue_fy2025_26_inr_cr": 1248.0,
+      "employees": 690,
+      "water_source": "River (Wardha)",
+      "coastal": "N",
+      "notes": "30 MW waste-heat recovery system",
+      "emissions": {
+        "unadjusted_direct_scope1_kt": 1510.0,
+        "clinker_reallocated_scope1_kt": 1510.0,
+        "clinker_adjustment_delta_kt": 0.0,
+        "unadjusted_intensity_tco2_per_t": 0.6292,
+        "adjusted_intensity_tco2_per_t": 0.6292
+      },
+      "physical_climate_data_bias_aware": {
+        "baseline_source": "ERA5-based reanalysis, not station data",
+        "baseline_period": "2015\u20132024 historical baseline",
+        "future_method": "Delta method (CMIP6 model change applied to ERA5 baseline)",
+        "days_above_40c_baseline": 51.0,
+        "days_above_40c_2040": 51.1,
+        "days_above_40c_model_delta": 0.1,
+        "days_above_40c_trend_falls": false,
+        "days_above_40c_trend_note": "projected increase",
+        "days_above_43c_baseline": 13.8,
+        "days_above_43c_2040": 19.3,
+        "days_above_43c_model_delta": 5.5,
+        "acute_heat_flag_over_25_days": false,
+        "hydrological_context_flood_api": {
+          "river_discharge_mean_m3s": 0.08,
+          "river_discharge_max_m3s": 0.13,
+          "feeds_money_calculation": false,
+          "note": "Open-Meteo Flood API river discharge provides hydrological context only and does NOT feed into downtime days or financial losses."
+        },
+        "water_and_coastal_assessment": {
+          "basin_name": "Wardha River Basin",
+          "water_stress_score_1_to_5": 3.8,
+          "water_lost_days_baseline": 5.0,
+          "water_lost_days_2040": 10.0,
+          "coastal_lost_days_baseline": 0.0,
+          "coastal_lost_days_2040": 0.0,
+          "source_status": "judgement, not sourced"
+        }
+      },
+      "operational_downtime_days_by_hazard": {
+        "baseline_2015_2024": {
+          "heat_lost_days_api_based": 8.55,
+          "water_lost_days_judgement": 5.0,
+          "coastal_lost_days_judgement": 0.0,
+          "total_lost_operating_days": 13.55
+        },
+        "horizon_2040_delta_method": {
+          "heat_lost_days_api_based": 9.94,
+          "water_lost_days_judgement": 10.0,
+          "coastal_lost_days_judgement": 0.0,
+          "total_lost_operating_days": 19.94
+        }
+      },
+      "three_component_financial_exposure_inr_cr_per_year": {
+        "rates": {
+          "daily_revenue_inr_cr_per_day": 3.7818,
+          "daily_ebitda_inr_cr_per_day": 0.7273
+        },
+        "baseline_2015_2024": {
+          "heat_component_api_based_inr_cr_per_year": 6.22,
+          "water_coastal_component_judgement_inr_cr_per_year": 3.64,
+          "ccts_component_assumption_inr_cr_per_year": 0.0,
+          "ccts_baseline_status": "unverified assumption (pending regulatory compliance schedule)",
+          "component_breakdown_sum_inr_cr_per_year": 9.86
+        },
+        "horizon_2040": {
+          "heat_component_api_based_inr_cr_per_year": 7.23,
+          "water_coastal_component_judgement_inr_cr_per_year": 7.27,
+          "ccts_component_case_10pct_adjusted_inr_cr_per_year": 22.65,
+          "ccts_component_case_10pct_unadjusted_inr_cr_per_year": 22.65,
+          "ccts_component_case_3pct_adjusted_inr_cr_per_year": 6.79,
+          "component_breakdown_sum_10pct_adjusted_inr_cr_per_year": 37.15,
+          "component_breakdown_sum_3pct_adjusted_inr_cr_per_year": 21.29
+        },
+        "increase_attribution_baseline_to_2040_inr_cr_per_year": {
+          "delta_heat_component_inr_cr_per_year": 1.01,
+          "delta_water_coastal_component_inr_cr_per_year": 3.63,
+          "delta_ccts_10pct_component_inr_cr_per_year": 22.65,
+          "delta_total_10pct_inr_cr_per_year": 27.29,
+          "pct_of_increase_from_heat": 3.7,
+          "pct_of_increase_from_water_coastal": 13.3,
+          "pct_of_increase_from_ccts": 83.0,
+          "statement": "Under the stated assumptions, 83.0% of the increase is regulatory (CCTS liability)."
+        }
+      }
+    },
+    {
+      "plant_id": "P04",
+      "plant_name": "Nimbus Nalgonda Works",
+      "town": "Nalgonda",
+      "state": "Telangana",
+      "latitude": 17.0575,
+      "longitude": 79.2671,
+      "plant_type": "Integrated",
+      "cement_capacity_mtpa": 2.5,
+      "cement_output_fy2025_26_mt": 1.85,
+      "clinker_produced_fy2025_26_mt": 1.22,
+      "clinker_shipped_fy2025_26_mt": 0.0,
+      "asset_value_inr_cr": 1800.0,
+      "revenue_fy2025_26_inr_cr": 999.0,
+      "employees": 540,
+      "water_source": "Groundwater",
+      "coastal": "N",
+      "notes": "",
+      "emissions": {
+        "unadjusted_direct_scope1_kt": 1025.0,
+        "clinker_reallocated_scope1_kt": 1025.0,
+        "clinker_adjustment_delta_kt": 0.0,
+        "unadjusted_intensity_tco2_per_t": 0.5541,
+        "adjusted_intensity_tco2_per_t": 0.5541
+      },
+      "physical_climate_data_bias_aware": {
+        "baseline_source": "ERA5-based reanalysis, not station data",
+        "baseline_period": "2015\u20132024 historical baseline",
+        "future_method": "Delta method (CMIP6 model change applied to ERA5 baseline)",
+        "days_above_40c_baseline": 22.5,
+        "days_above_40c_2040": 28.3,
+        "days_above_40c_model_delta": 5.8,
+        "days_above_40c_trend_falls": false,
+        "days_above_40c_trend_note": "projected increase",
+        "days_above_43c_baseline": 1.6,
+        "days_above_43c_2040": 6.7,
+        "days_above_43c_model_delta": 5.1,
+        "acute_heat_flag_over_25_days": false,
+        "hydrological_context_flood_api": {
+          "river_discharge_mean_m3s": 0.13,
+          "river_discharge_max_m3s": 0.42,
+          "feeds_money_calculation": false,
+          "note": "Open-Meteo Flood API river discharge provides hydrological context only and does NOT feed into downtime days or financial losses."
+        },
+        "water_and_coastal_assessment": {
+          "basin_name": "Musi / Krishna River Basin",
+          "water_stress_score_1_to_5": 3.9,
+          "water_lost_days_baseline": 6.0,
+          "water_lost_days_2040": 12.0,
+          "coastal_lost_days_baseline": 0.0,
+          "coastal_lost_days_2040": 0.0,
+          "source_status": "judgement, not sourced"
+        }
+      },
+      "operational_downtime_days_by_hazard": {
+        "baseline_2015_2024": {
+          "heat_lost_days_api_based": 2.65,
+          "water_lost_days_judgement": 6.0,
+          "coastal_lost_days_judgement": 0.0,
+          "total_lost_operating_days": 8.65
+        },
+        "horizon_2040_delta_method": {
+          "heat_lost_days_api_based": 4.5,
+          "water_lost_days_judgement": 12.0,
+          "coastal_lost_days_judgement": 0.0,
+          "total_lost_operating_days": 16.5
+        }
+      },
+      "three_component_financial_exposure_inr_cr_per_year": {
+        "rates": {
+          "daily_revenue_inr_cr_per_day": 3.0273,
+          "daily_ebitda_inr_cr_per_day": 0.5606
+        },
+        "baseline_2015_2024": {
+          "heat_component_api_based_inr_cr_per_year": 1.49,
+          "water_coastal_component_judgement_inr_cr_per_year": 3.36,
+          "ccts_component_assumption_inr_cr_per_year": 0.0,
+          "ccts_baseline_status": "unverified assumption (pending regulatory compliance schedule)",
+          "component_breakdown_sum_inr_cr_per_year": 4.85
+        },
+        "horizon_2040": {
+          "heat_component_api_based_inr_cr_per_year": 2.52,
+          "water_coastal_component_judgement_inr_cr_per_year": 6.73,
+          "ccts_component_case_10pct_adjusted_inr_cr_per_year": 15.38,
+          "ccts_component_case_10pct_unadjusted_inr_cr_per_year": 15.38,
+          "ccts_component_case_3pct_adjusted_inr_cr_per_year": 4.61,
+          "component_breakdown_sum_10pct_adjusted_inr_cr_per_year": 24.63,
+          "component_breakdown_sum_3pct_adjusted_inr_cr_per_year": 13.86
+        },
+        "increase_attribution_baseline_to_2040_inr_cr_per_year": {
+          "delta_heat_component_inr_cr_per_year": 1.03,
+          "delta_water_coastal_component_inr_cr_per_year": 3.37,
+          "delta_ccts_10pct_component_inr_cr_per_year": 15.38,
+          "delta_total_10pct_inr_cr_per_year": 19.78,
+          "pct_of_increase_from_heat": 5.2,
+          "pct_of_increase_from_water_coastal": 17.0,
+          "pct_of_increase_from_ccts": 77.8,
+          "statement": "Under the stated assumptions, 77.8% of the increase is regulatory (CCTS liability)."
+        }
+      }
+    },
+    {
+      "plant_id": "P05",
+      "plant_name": "Nimbus Ariyalur Works",
+      "town": "Ariyalur",
+      "state": "Tamil Nadu",
+      "latitude": 11.1401,
+      "longitude": 79.0786,
+      "plant_type": "Integrated",
+      "cement_capacity_mtpa": 2.0,
+      "cement_output_fy2025_26_mt": 1.55,
+      "clinker_produced_fy2025_26_mt": 1.12,
+      "clinker_shipped_fy2025_26_mt": 0.0,
+      "asset_value_inr_cr": 1500.0,
+      "revenue_fy2025_26_inr_cr": 868.0,
+      "employees": 480,
+      "water_source": "Groundwater",
+      "coastal": "N",
+      "notes": "Oldest kiln (1998)",
+      "emissions": {
+        "unadjusted_direct_scope1_kt": 1005.0,
+        "clinker_reallocated_scope1_kt": 1005.0,
+        "clinker_adjustment_delta_kt": 0.0,
+        "unadjusted_intensity_tco2_per_t": 0.6484,
+        "adjusted_intensity_tco2_per_t": 0.6484
+      },
+      "physical_climate_data_bias_aware": {
+        "baseline_source": "ERA5-based reanalysis, not station data",
+        "baseline_period": "2015\u20132024 historical baseline",
+        "future_method": "Delta method (CMIP6 model change applied to ERA5 baseline)",
+        "days_above_40c_baseline": 12.4,
+        "days_above_40c_2040": 19.7,
+        "days_above_40c_model_delta": 7.3,
+        "days_above_40c_trend_falls": false,
+        "days_above_40c_trend_note": "projected increase",
+        "days_above_43c_baseline": 0.0,
+        "days_above_43c_2040": 3.3,
+        "days_above_43c_model_delta": 3.3,
+        "acute_heat_flag_over_25_days": false,
+        "hydrological_context_flood_api": {
+          "river_discharge_mean_m3s": 0.14,
+          "river_discharge_max_m3s": 0.99,
+          "feeds_money_calculation": false,
+          "note": "Open-Meteo Flood API river discharge provides hydrological context only and does NOT feed into downtime days or financial losses."
+        },
+        "water_and_coastal_assessment": {
+          "basin_name": "Vellar / Cauvery Basin",
+          "water_stress_score_1_to_5": 3.7,
+          "water_lost_days_baseline": 5.0,
+          "water_lost_days_2040": 11.0,
+          "coastal_lost_days_baseline": 0.0,
+          "coastal_lost_days_2040": 0.0,
+          "source_status": "judgement, not sourced"
+        }
+      },
+      "operational_downtime_days_by_hazard": {
+        "baseline_2015_2024": {
+          "heat_lost_days_api_based": 1.24,
+          "water_lost_days_judgement": 5.0,
+          "coastal_lost_days_judgement": 0.0,
+          "total_lost_operating_days": 6.24
+        },
+        "horizon_2040_delta_method": {
+          "heat_lost_days_api_based": 2.79,
+          "water_lost_days_judgement": 11.0,
+          "coastal_lost_days_judgement": 0.0,
+          "total_lost_operating_days": 13.79
+        }
+      },
+      "three_component_financial_exposure_inr_cr_per_year": {
+        "rates": {
+          "daily_revenue_inr_cr_per_day": 2.6303,
+          "daily_ebitda_inr_cr_per_day": 0.4697
+        },
+        "baseline_2015_2024": {
+          "heat_component_api_based_inr_cr_per_year": 0.58,
+          "water_coastal_component_judgement_inr_cr_per_year": 2.35,
+          "ccts_component_assumption_inr_cr_per_year": 0.0,
+          "ccts_baseline_status": "unverified assumption (pending regulatory compliance schedule)",
+          "component_breakdown_sum_inr_cr_per_year": 2.93
+        },
+        "horizon_2040": {
+          "heat_component_api_based_inr_cr_per_year": 1.31,
+          "water_coastal_component_judgement_inr_cr_per_year": 5.17,
+          "ccts_component_case_10pct_adjusted_inr_cr_per_year": 15.07,
+          "ccts_component_case_10pct_unadjusted_inr_cr_per_year": 15.07,
+          "ccts_component_case_3pct_adjusted_inr_cr_per_year": 4.52,
+          "component_breakdown_sum_10pct_adjusted_inr_cr_per_year": 21.55,
+          "component_breakdown_sum_3pct_adjusted_inr_cr_per_year": 11.0
+        },
+        "increase_attribution_baseline_to_2040_inr_cr_per_year": {
+          "delta_heat_component_inr_cr_per_year": 0.73,
+          "delta_water_coastal_component_inr_cr_per_year": 2.82,
+          "delta_ccts_10pct_component_inr_cr_per_year": 15.07,
+          "delta_total_10pct_inr_cr_per_year": 18.62,
+          "pct_of_increase_from_heat": 3.9,
+          "pct_of_increase_from_water_coastal": 15.1,
+          "pct_of_increase_from_ccts": 80.9,
+          "statement": "Under the stated assumptions, 80.9% of the increase is regulatory (CCTS liability)."
+        }
+      }
+    },
+    {
+      "plant_id": "P06",
+      "plant_name": "Nimbus Baloda Bazar Works",
+      "town": "Baloda Bazar",
+      "state": "Chhattisgarh",
+      "latitude": 21.6566,
+      "longitude": 82.1606,
+      "plant_type": "Integrated",
+      "cement_capacity_mtpa": 3.0,
+      "cement_output_fy2025_26_mt": 2.55,
+      "clinker_produced_fy2025_26_mt": 3.01,
+      "clinker_shipped_fy2025_26_mt": 1.28,
+      "asset_value_inr_cr": 2350.0,
+      "revenue_fy2025_26_inr_cr": 1275.0,
+      "employees": 700,
+      "water_source": "Canal (Mahanadi system)",
+      "coastal": "N",
+      "notes": "Newest kiln (2022); ships clinker to P08 (0.68 Mt) and P09 (0.60 Mt)",
+      "emissions": {
+        "unadjusted_direct_scope1_kt": 2470.0,
+        "clinker_reallocated_scope1_kt": 1419.63,
+        "clinker_adjustment_delta_kt": -1050.37,
+        "unadjusted_intensity_tco2_per_t": 0.9686,
+        "adjusted_intensity_tco2_per_t": 0.5567
+      },
+      "physical_climate_data_bias_aware": {
+        "baseline_source": "ERA5-based reanalysis, not station data",
+        "baseline_period": "2015\u20132024 historical baseline",
+        "future_method": "Delta method (CMIP6 model change applied to ERA5 baseline)",
+        "days_above_40c_baseline": 39.6,
+        "days_above_40c_2040": 35.8,
+        "days_above_40c_model_delta": -3.8,
+        "days_above_40c_trend_falls": true,
+        "days_above_40c_trend_note": "change within model noise",
+        "days_above_43c_baseline": 7.4,
+        "days_above_43c_2040": 6.8,
+        "days_above_43c_model_delta": -0.6,
+        "acute_heat_flag_over_25_days": false,
+        "hydrological_context_flood_api": {
+          "river_discharge_mean_m3s": 1.18,
+          "river_discharge_max_m3s": 5.5,
+          "feeds_money_calculation": false,
+          "note": "Open-Meteo Flood API river discharge provides hydrological context only and does NOT feed into downtime days or financial losses."
+        },
+        "water_and_coastal_assessment": {
+          "basin_name": "Mahanadi Canal System",
+          "water_stress_score_1_to_5": 2.2,
+          "water_lost_days_baseline": 1.5,
+          "water_lost_days_2040": 4.0,
+          "coastal_lost_days_baseline": 0.0,
+          "coastal_lost_days_2040": 0.0,
+          "source_status": "judgement, not sourced"
+        }
+      },
+      "operational_downtime_days_by_hazard": {
+        "baseline_2015_2024": {
+          "heat_lost_days_api_based": 5.81,
+          "water_lost_days_judgement": 1.5,
+          "coastal_lost_days_judgement": 0.0,
+          "total_lost_operating_days": 7.31
+        },
+        "horizon_2040_delta_method": {
+          "heat_lost_days_api_based": 5.28,
+          "water_lost_days_judgement": 4.0,
+          "coastal_lost_days_judgement": 0.0,
+          "total_lost_operating_days": 9.28
+        }
+      },
+      "three_component_financial_exposure_inr_cr_per_year": {
+        "rates": {
+          "daily_revenue_inr_cr_per_day": 3.8636,
+          "daily_ebitda_inr_cr_per_day": 0.7727
+        },
+        "baseline_2015_2024": {
+          "heat_component_api_based_inr_cr_per_year": 4.49,
+          "water_coastal_component_judgement_inr_cr_per_year": 1.16,
+          "ccts_component_assumption_inr_cr_per_year": 0.0,
+          "ccts_baseline_status": "unverified assumption (pending regulatory compliance schedule)",
+          "component_breakdown_sum_inr_cr_per_year": 5.65
+        },
+        "horizon_2040": {
+          "heat_component_api_based_inr_cr_per_year": 4.08,
+          "water_coastal_component_judgement_inr_cr_per_year": 3.09,
+          "ccts_component_case_10pct_adjusted_inr_cr_per_year": 21.29,
+          "ccts_component_case_10pct_unadjusted_inr_cr_per_year": 37.05,
+          "ccts_component_case_3pct_adjusted_inr_cr_per_year": 6.39,
+          "component_breakdown_sum_10pct_adjusted_inr_cr_per_year": 28.46,
+          "component_breakdown_sum_3pct_adjusted_inr_cr_per_year": 13.56
+        },
+        "increase_attribution_baseline_to_2040_inr_cr_per_year": {
+          "delta_heat_component_inr_cr_per_year": -0.41,
+          "delta_water_coastal_component_inr_cr_per_year": 1.93,
+          "delta_ccts_10pct_component_inr_cr_per_year": 21.29,
+          "delta_total_10pct_inr_cr_per_year": 22.81,
+          "pct_of_increase_from_heat": -1.8,
+          "pct_of_increase_from_water_coastal": 8.5,
+          "pct_of_increase_from_ccts": 93.3,
+          "statement": "Under the stated assumptions, 93.3% of the increase is regulatory (CCTS liability)."
+        }
+      }
+    },
+    {
+      "plant_id": "P07",
+      "plant_name": "Nimbus Mundra Grinding Unit",
+      "town": "Mundra",
+      "state": "Gujarat",
+      "latitude": 22.839,
+      "longitude": 69.7219,
+      "plant_type": "Grinding unit",
+      "cement_capacity_mtpa": 2.0,
+      "cement_output_fy2025_26_mt": 1.6,
+      "clinker_produced_fy2025_26_mt": 0.0,
+      "clinker_shipped_fy2025_26_mt": 0.0,
+      "asset_value_inr_cr": 650.0,
+      "revenue_fy2025_26_inr_cr": 848.0,
+      "employees": 210,
+      "water_source": "Desalinated seawater",
+      "coastal": "Y",
+      "notes": "Gets 1.12 Mt clinker a year from P01 by rail",
+      "emissions": {
+        "unadjusted_direct_scope1_kt": 32.0,
+        "clinker_reallocated_scope1_kt": 1052.41,
+        "clinker_adjustment_delta_kt": 1020.41,
+        "unadjusted_intensity_tco2_per_t": 0.02,
+        "adjusted_intensity_tco2_per_t": 0.6578
+      },
+      "physical_climate_data_bias_aware": {
+        "baseline_source": "ERA5-based reanalysis, not station data",
+        "baseline_period": "2015\u20132024 historical baseline",
+        "future_method": "Delta method (CMIP6 model change applied to ERA5 baseline)",
+        "days_above_40c_baseline": 3.2,
+        "days_above_40c_2040": 7.1,
+        "days_above_40c_model_delta": 3.9,
+        "days_above_40c_trend_falls": false,
+        "days_above_40c_trend_note": "projected increase",
+        "days_above_43c_baseline": 0.4,
+        "days_above_43c_2040": 2.0,
+        "days_above_43c_model_delta": 1.6,
+        "acute_heat_flag_over_25_days": false,
+        "hydrological_context_flood_api": {
+          "river_discharge_mean_m3s": 0.01,
+          "river_discharge_max_m3s": 0.02,
+          "feeds_money_calculation": false,
+          "note": "Open-Meteo Flood API river discharge provides hydrological context only and does NOT feed into downtime days or financial losses."
+        },
+        "water_and_coastal_assessment": {
+          "basin_name": "Gulf of Kutch Coastal Zone",
+          "water_stress_score_1_to_5": 2.0,
+          "water_lost_days_baseline": 0.5,
+          "water_lost_days_2040": 1.5,
+          "coastal_lost_days_baseline": 2.0,
+          "coastal_lost_days_2040": 4.0,
+          "source_status": "judgement, not sourced"
+        }
+      },
+      "operational_downtime_days_by_hazard": {
+        "baseline_2015_2024": {
+          "heat_lost_days_api_based": 0.21,
+          "water_lost_days_judgement": 0.5,
+          "coastal_lost_days_judgement": 2.0,
+          "total_lost_operating_days": 2.71
+        },
+        "horizon_2040_delta_method": {
+          "heat_lost_days_api_based": 0.6,
+          "water_lost_days_judgement": 1.5,
+          "coastal_lost_days_judgement": 4.0,
+          "total_lost_operating_days": 6.1
+        }
+      },
+      "three_component_financial_exposure_inr_cr_per_year": {
+        "rates": {
+          "daily_revenue_inr_cr_per_day": 2.5697,
+          "daily_ebitda_inr_cr_per_day": 0.4848
+        },
+        "baseline_2015_2024": {
+          "heat_component_api_based_inr_cr_per_year": 0.1,
+          "water_coastal_component_judgement_inr_cr_per_year": 1.21,
+          "ccts_component_assumption_inr_cr_per_year": 0.0,
+          "ccts_baseline_status": "unverified assumption (pending regulatory compliance schedule)",
+          "component_breakdown_sum_inr_cr_per_year": 1.31
+        },
+        "horizon_2040": {
+          "heat_component_api_based_inr_cr_per_year": 0.29,
+          "water_coastal_component_judgement_inr_cr_per_year": 2.67,
+          "ccts_component_case_10pct_adjusted_inr_cr_per_year": 15.79,
+          "ccts_component_case_10pct_unadjusted_inr_cr_per_year": 0.48,
+          "ccts_component_case_3pct_adjusted_inr_cr_per_year": 4.74,
+          "component_breakdown_sum_10pct_adjusted_inr_cr_per_year": 18.75,
+          "component_breakdown_sum_3pct_adjusted_inr_cr_per_year": 7.7
+        },
+        "increase_attribution_baseline_to_2040_inr_cr_per_year": {
+          "delta_heat_component_inr_cr_per_year": 0.19,
+          "delta_water_coastal_component_inr_cr_per_year": 1.46,
+          "delta_ccts_10pct_component_inr_cr_per_year": 15.79,
+          "delta_total_10pct_inr_cr_per_year": 17.44,
+          "pct_of_increase_from_heat": 1.1,
+          "pct_of_increase_from_water_coastal": 8.4,
+          "pct_of_increase_from_ccts": 90.5,
+          "statement": "Under the stated assumptions, 90.5% of the increase is regulatory (CCTS liability)."
+        }
+      }
+    },
+    {
+      "plant_id": "P08",
+      "plant_name": "Nimbus Paradip Grinding Unit",
+      "town": "Paradip",
+      "state": "Odisha",
+      "latitude": 20.3165,
+      "longitude": 86.6114,
+      "plant_type": "Grinding unit",
+      "cement_capacity_mtpa": 1.5,
+      "cement_output_fy2025_26_mt": 1.05,
+      "clinker_produced_fy2025_26_mt": 0.0,
+      "clinker_shipped_fy2025_26_mt": 0.0,
+      "asset_value_inr_cr": 480.0,
+      "revenue_fy2025_26_inr_cr": 536.0,
+      "employees": 180,
+      "water_source": "Municipal supply",
+      "coastal": "Y",
+      "notes": "Gets 0.68 Mt clinker a year from P06; blends fly ash from nearby power plants",
+      "emissions": {
+        "unadjusted_direct_scope1_kt": 21.0,
+        "clinker_reallocated_scope1_kt": 579.01,
+        "clinker_adjustment_delta_kt": 558.01,
+        "unadjusted_intensity_tco2_per_t": 0.02,
+        "adjusted_intensity_tco2_per_t": 0.5514
+      },
+      "physical_climate_data_bias_aware": {
+        "baseline_source": "ERA5-based reanalysis, not station data",
+        "baseline_period": "2015\u20132024 historical baseline",
+        "future_method": "Delta method (CMIP6 model change applied to ERA5 baseline)",
+        "days_above_40c_baseline": 0.6,
+        "days_above_40c_2040": 1.0,
+        "days_above_40c_model_delta": 0.4,
+        "days_above_40c_trend_falls": false,
+        "days_above_40c_trend_note": "projected increase",
+        "days_above_43c_baseline": 0.0,
+        "days_above_43c_2040": 0.6,
+        "days_above_43c_model_delta": 0.6,
+        "acute_heat_flag_over_25_days": false,
+        "hydrological_context_flood_api": {
+          "river_discharge_mean_m3s": 873.81,
+          "river_discharge_max_m3s": 1748.85,
+          "feeds_money_calculation": false,
+          "note": "Open-Meteo Flood API river discharge provides hydrological context only and does NOT feed into downtime days or financial losses."
+        },
+        "water_and_coastal_assessment": {
+          "basin_name": "Mahanadi Delta Coast",
+          "water_stress_score_1_to_5": 2.0,
+          "water_lost_days_baseline": 1.0,
+          "water_lost_days_2040": 2.0,
+          "coastal_lost_days_baseline": 4.5,
+          "coastal_lost_days_2040": 8.0,
+          "source_status": "judgement, not sourced"
+        }
+      },
+      "operational_downtime_days_by_hazard": {
+        "baseline_2015_2024": {
+          "heat_lost_days_api_based": 0.03,
+          "water_lost_days_judgement": 1.0,
+          "coastal_lost_days_judgement": 4.5,
+          "total_lost_operating_days": 5.53
+        },
+        "horizon_2040_delta_method": {
+          "heat_lost_days_api_based": 0.12,
+          "water_lost_days_judgement": 2.0,
+          "coastal_lost_days_judgement": 8.0,
+          "total_lost_operating_days": 10.12
+        }
+      },
+      "three_component_financial_exposure_inr_cr_per_year": {
+        "rates": {
+          "daily_revenue_inr_cr_per_day": 1.6242,
+          "daily_ebitda_inr_cr_per_day": 0.3182
+        },
+        "baseline_2015_2024": {
+          "heat_component_api_based_inr_cr_per_year": 0.01,
+          "water_coastal_component_judgement_inr_cr_per_year": 1.75,
+          "ccts_component_assumption_inr_cr_per_year": 0.0,
+          "ccts_baseline_status": "unverified assumption (pending regulatory compliance schedule)",
+          "component_breakdown_sum_inr_cr_per_year": 1.76
+        },
+        "horizon_2040": {
+          "heat_component_api_based_inr_cr_per_year": 0.04,
+          "water_coastal_component_judgement_inr_cr_per_year": 3.18,
+          "ccts_component_case_10pct_adjusted_inr_cr_per_year": 8.69,
+          "ccts_component_case_10pct_unadjusted_inr_cr_per_year": 0.32,
+          "ccts_component_case_3pct_adjusted_inr_cr_per_year": 2.61,
+          "component_breakdown_sum_10pct_adjusted_inr_cr_per_year": 11.91,
+          "component_breakdown_sum_3pct_adjusted_inr_cr_per_year": 5.83
+        },
+        "increase_attribution_baseline_to_2040_inr_cr_per_year": {
+          "delta_heat_component_inr_cr_per_year": 0.03,
+          "delta_water_coastal_component_inr_cr_per_year": 1.43,
+          "delta_ccts_10pct_component_inr_cr_per_year": 8.69,
+          "delta_total_10pct_inr_cr_per_year": 10.15,
+          "pct_of_increase_from_heat": 0.3,
+          "pct_of_increase_from_water_coastal": 14.1,
+          "pct_of_increase_from_ccts": 85.6,
+          "statement": "Under the stated assumptions, 85.6% of the increase is regulatory (CCTS liability)."
+        }
+      }
+    },
+    {
+      "plant_id": "P09",
+      "plant_name": "Nimbus Durgapur Grinding Unit",
+      "town": "Durgapur",
+      "state": "West Bengal",
+      "latitude": 23.5204,
+      "longitude": 87.3119,
+      "plant_type": "Grinding unit",
+      "cement_capacity_mtpa": 1.5,
+      "cement_output_fy2025_26_mt": 1.2,
+      "clinker_produced_fy2025_26_mt": 0.0,
+      "clinker_shipped_fy2025_26_mt": 0.0,
+      "asset_value_inr_cr": 470.0,
+      "revenue_fy2025_26_inr_cr": 624.0,
+      "employees": 170,
+      "water_source": "River (Damodar)",
+      "coastal": "N",
+      "notes": "Gets 0.60 Mt clinker a year from P06; makes slag cement with steel slag",
+      "emissions": {
+        "unadjusted_direct_scope1_kt": 24.0,
+        "clinker_reallocated_scope1_kt": 516.36,
+        "clinker_adjustment_delta_kt": 492.36,
+        "unadjusted_intensity_tco2_per_t": 0.02,
+        "adjusted_intensity_tco2_per_t": 0.4303
+      },
+      "physical_climate_data_bias_aware": {
+        "baseline_source": "ERA5-based reanalysis, not station data",
+        "baseline_period": "2015\u20132024 historical baseline",
+        "future_method": "Delta method (CMIP6 model change applied to ERA5 baseline)",
+        "days_above_40c_baseline": 11.5,
+        "days_above_40c_2040": 15.4,
+        "days_above_40c_model_delta": 3.9,
+        "days_above_40c_trend_falls": false,
+        "days_above_40c_trend_note": "projected increase",
+        "days_above_43c_baseline": 1.7,
+        "days_above_43c_2040": 6.4,
+        "days_above_43c_model_delta": 4.7,
+        "acute_heat_flag_over_25_days": false,
+        "hydrological_context_flood_api": {
+          "river_discharge_mean_m3s": 0.48,
+          "river_discharge_max_m3s": 18.05,
+          "feeds_money_calculation": false,
+          "note": "Open-Meteo Flood API river discharge provides hydrological context only and does NOT feed into downtime days or financial losses."
+        },
+        "water_and_coastal_assessment": {
+          "basin_name": "Damodar River Basin",
+          "water_stress_score_1_to_5": 2.6,
+          "water_lost_days_baseline": 2.0,
+          "water_lost_days_2040": 5.0,
+          "coastal_lost_days_baseline": 0.0,
+          "coastal_lost_days_2040": 0.0,
+          "source_status": "judgement, not sourced"
+        }
+      },
+      "operational_downtime_days_by_hazard": {
+        "baseline_2015_2024": {
+          "heat_lost_days_api_based": 0.79,
+          "water_lost_days_judgement": 2.0,
+          "coastal_lost_days_judgement": 0.0,
+          "total_lost_operating_days": 2.79
+        },
+        "horizon_2040_delta_method": {
+          "heat_lost_days_api_based": 1.57,
+          "water_lost_days_judgement": 5.0,
+          "coastal_lost_days_judgement": 0.0,
+          "total_lost_operating_days": 6.57
+        }
+      },
+      "three_component_financial_exposure_inr_cr_per_year": {
+        "rates": {
+          "daily_revenue_inr_cr_per_day": 1.8909,
+          "daily_ebitda_inr_cr_per_day": 0.3636
+        },
+        "baseline_2015_2024": {
+          "heat_component_api_based_inr_cr_per_year": 0.29,
+          "water_coastal_component_judgement_inr_cr_per_year": 0.73,
+          "ccts_component_assumption_inr_cr_per_year": 0.0,
+          "ccts_baseline_status": "unverified assumption (pending regulatory compliance schedule)",
+          "component_breakdown_sum_inr_cr_per_year": 1.02
+        },
+        "horizon_2040": {
+          "heat_component_api_based_inr_cr_per_year": 0.57,
+          "water_coastal_component_judgement_inr_cr_per_year": 1.82,
+          "ccts_component_case_10pct_adjusted_inr_cr_per_year": 7.75,
+          "ccts_component_case_10pct_unadjusted_inr_cr_per_year": 0.36,
+          "ccts_component_case_3pct_adjusted_inr_cr_per_year": 2.32,
+          "component_breakdown_sum_10pct_adjusted_inr_cr_per_year": 10.14,
+          "component_breakdown_sum_3pct_adjusted_inr_cr_per_year": 4.71
+        },
+        "increase_attribution_baseline_to_2040_inr_cr_per_year": {
+          "delta_heat_component_inr_cr_per_year": 0.28,
+          "delta_water_coastal_component_inr_cr_per_year": 1.09,
+          "delta_ccts_10pct_component_inr_cr_per_year": 7.75,
+          "delta_total_10pct_inr_cr_per_year": 9.12,
+          "pct_of_increase_from_heat": 3.1,
+          "pct_of_increase_from_water_coastal": 12.0,
+          "pct_of_increase_from_ccts": 85.0,
+          "statement": "Under the stated assumptions, 85.0% of the increase is regulatory (CCTS liability)."
+        }
+      }
+    }
+  ]
+}

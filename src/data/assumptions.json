@@ -1,0 +1,182 @@
+{
+  "version": "4.0-bias-aware-audited",
+  "status": "Bias-Aware Methodology & Assumptions Registry",
+  "metadata_rules": {
+    "ccts_methodology_statement": "CCTS here = emissions \u00d7 % cut \u00d7 price, with no abatement and no growth to 2040, as a placeholder pending plant baselines.",
+    "one_calculation_path_rule": "All summary portfolio figures are derived strictly as the exact sum of the plant rows. Exposure is split into three separate components: heat (API-based), water+coastal (judgement), and CCTS (assumption). It must not be aggregated into an unlabelled single headline.",
+    "flow_vs_stock_label_rule": "All annual financial figures represent annual flows and are strictly labelled as 'per year' (INR Crores / year). They must not be compared to the balance sheet asset base without this explicit rate distinction.",
+    "clinker_toggle_rule": "The Clinker Reallocation toggle changes only the inter-plant distribution of emissions and CCTS liabilities between mother kilns (P01, P06) and grinding units (P07, P08, P09). The fleet-wide total Scope 1 emissions (10,932.0 kt) and total CCTS liabilities remain strictly invariant.",
+    "flood_data_role": "Open-Meteo Flood API river discharge (m3/s) provides contextual hydrological background only and does NOT feed into the financial loss calculation. Lost operating days are derived strictly from the stated heat formula and the labelled judgement-based water and coastal assumptions.",
+    "heat_bias_correction_method": "Bias-aware delta method applied: Historical baseline (2015-2024) is sourced from ERA5-based reanalysis, not station data. 2040 projection is computed as historical baseline plus the CMIP6 multi-model ensemble change between 2015-2024 and 2036-2045 (delta method), per plant."
+  },
+  "financial_assumptions": {
+    "nominal_operating_days_per_year": {
+      "value": 330,
+      "unit": "days",
+      "source_status": "Assumption",
+      "justification": "Standard Indian cement manufacturing operating window allowing 35 days for planned kiln relining, overhaul, and statutory inspections."
+    },
+    "industry_ebitda_margin_per_tonne": {
+      "value": 1000.0,
+      "unit": "INR / tonne cement",
+      "source_status": "Assumption",
+      "justification": "Industry benchmark EBITDA margin (~18-20% margin on average revenue realization of INR 5,263/t)."
+    },
+    "daily_revenue_calculation": {
+      "formula": "plant_revenue_fy2025_26_inr_cr / nominal_operating_days_per_year",
+      "unit": "INR Crores / operating day"
+    },
+    "daily_ebitda_calculation": {
+      "formula": "(cement_output_fy2025_26_mt * 100.0) / nominal_operating_days_per_year",
+      "unit": "INR Crores / operating day"
+    }
+  },
+  "heat_lost_days_assumptions": {
+    "baseline_data": {
+      "period": "2015-01-01 to 2024-12-31 (10-year annual average)",
+      "source": "ERA5-based reanalysis, not station data",
+      "provider": "European Centre for Medium-Range Weather Forecasts (ECMWF) via Open-Meteo Historical Archive API"
+    },
+    "climate_models_used_for_delta": {
+      "baseline_model_period": "2015-01-01 to 2024-12-31",
+      "future_model_period": "2036-01-01 to 2045-12-31 (representing 2040 horizon)",
+      "models": [
+        "EC_Earth3P_HR (CMIP6 HighResMIP)",
+        "MRI_AGCM3_2_S (CMIP6 HighResMIP)"
+      ],
+      "aggregation": "Arithmetic mean of the two high-resolution CMIP6 models"
+    },
+    "delta_method_formula": {
+      "d40_2040": "max(0, d40_era5_baseline + (d40_cmip_future - d40_cmip_historical))",
+      "d43_2040": "max(0, min(d40_2040, d43_era5_baseline + (d43_cmip_future - d43_cmip_historical)))"
+    },
+    "thresholds_and_factors": {
+      "moderate_heat_threshold_celsius": 40.0,
+      "extreme_heat_threshold_celsius": 43.0,
+      "factor_moderate_heat": {
+        "value": 0.1,
+        "unit": "lost operating days per day in [40C, 43C)",
+        "source_status": "Assumption"
+      },
+      "factor_extreme_heat": {
+        "value": 0.35,
+        "unit": "lost operating days per day >= 43C",
+        "source_status": "Assumption"
+      },
+      "grinding_unit_damping_factor": {
+        "value": 0.5,
+        "unit": "multiplier",
+        "source_status": "Assumption"
+      }
+    },
+    "acute_heat_flag_status": {
+      "threshold_days_per_year": 25.0,
+      "result": "Dropped. Under the bias-aware ERA5 reanalysis baseline and delta method, no plant exceeds 25 days/year with Tmax >= 43C. Peak extreme heat occurs at P03 Chandrapur (13.8 d/yr baseline, 19.3 d/yr in 2040)."
+    }
+  },
+  "water_and_coastal_assumptions": {
+    "P01": {
+      "basin_name": "Banas River Basin",
+      "water_stress_score_1_to_5": 4.5,
+      "water_lost_days_baseline": 8.0,
+      "water_lost_days_2040": 16.0,
+      "coastal_lost_days_baseline": 0.0,
+      "coastal_lost_days_2040": 0.0,
+      "source_status": "judgement, not sourced"
+    },
+    "P02": {
+      "basin_name": "Tons River Basin",
+      "water_stress_score_1_to_5": 3.5,
+      "water_lost_days_baseline": 3.0,
+      "water_lost_days_2040": 7.0,
+      "coastal_lost_days_baseline": 0.0,
+      "coastal_lost_days_2040": 0.0,
+      "source_status": "judgement, not sourced"
+    },
+    "P03": {
+      "basin_name": "Wardha River Basin",
+      "water_stress_score_1_to_5": 3.8,
+      "water_lost_days_baseline": 5.0,
+      "water_lost_days_2040": 10.0,
+      "coastal_lost_days_baseline": 0.0,
+      "coastal_lost_days_2040": 0.0,
+      "source_status": "judgement, not sourced"
+    },
+    "P04": {
+      "basin_name": "Musi / Krishna River Basin",
+      "water_stress_score_1_to_5": 3.9,
+      "water_lost_days_baseline": 6.0,
+      "water_lost_days_2040": 12.0,
+      "coastal_lost_days_baseline": 0.0,
+      "coastal_lost_days_2040": 0.0,
+      "source_status": "judgement, not sourced"
+    },
+    "P05": {
+      "basin_name": "Vellar / Cauvery Basin",
+      "water_stress_score_1_to_5": 3.7,
+      "water_lost_days_baseline": 5.0,
+      "water_lost_days_2040": 11.0,
+      "coastal_lost_days_baseline": 0.0,
+      "coastal_lost_days_2040": 0.0,
+      "source_status": "judgement, not sourced"
+    },
+    "P06": {
+      "basin_name": "Mahanadi Canal System",
+      "water_stress_score_1_to_5": 2.2,
+      "water_lost_days_baseline": 1.5,
+      "water_lost_days_2040": 4.0,
+      "coastal_lost_days_baseline": 0.0,
+      "coastal_lost_days_2040": 0.0,
+      "source_status": "judgement, not sourced"
+    },
+    "P07": {
+      "basin_name": "Gulf of Kutch Coastal Zone",
+      "water_stress_score_1_to_5": 2.0,
+      "water_lost_days_baseline": 0.5,
+      "water_lost_days_2040": 1.5,
+      "coastal_lost_days_baseline": 2.0,
+      "coastal_lost_days_2040": 4.0,
+      "source_status": "judgement, not sourced"
+    },
+    "P08": {
+      "basin_name": "Mahanadi Delta Coast",
+      "water_stress_score_1_to_5": 2.0,
+      "water_lost_days_baseline": 1.0,
+      "water_lost_days_2040": 2.0,
+      "coastal_lost_days_baseline": 4.5,
+      "coastal_lost_days_2040": 8.0,
+      "source_status": "judgement, not sourced"
+    },
+    "P09": {
+      "basin_name": "Damodar River Basin",
+      "water_stress_score_1_to_5": 2.6,
+      "water_lost_days_baseline": 2.0,
+      "water_lost_days_2040": 5.0,
+      "coastal_lost_days_baseline": 0.0,
+      "coastal_lost_days_2040": 0.0,
+      "source_status": "judgement, not sourced"
+    }
+  },
+  "ccts_transition_risk_assumptions": {
+    "carbon_price_per_tco2": {
+      "value": 1500.0,
+      "unit": "INR / tCO2",
+      "source_status": "Assumption"
+    },
+    "baseline_penalty_status": {
+      "value": 0.0,
+      "unit": "INR Crores / year",
+      "source_status": "unverified assumption (pending regulatory compliance schedule)"
+    },
+    "ccts_scenarios_evaluated": {
+      "case_3pct": {
+        "mandated_intensity_reduction_pct": 3.0,
+        "source_status": "Labelled assumption pending official CCTS schedule"
+      },
+      "case_10pct": {
+        "mandated_intensity_reduction_pct": 10.0,
+        "source_status": "Labelled assumption pending official CCTS schedule"
+      }
+    }
+  }
+}
