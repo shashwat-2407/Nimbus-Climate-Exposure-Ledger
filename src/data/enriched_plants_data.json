@@ -2,8 +2,7 @@
   "metadata": {
     "company": "Nimbus Cement Ltd",
     "author": "Meera Iyer (Head of Sustainability)",
-    "purpose": "Climate Exposure & Transition Risk Ledger: ERA5 Baseline vs 2040 Delta Method",
-    "audit_version": "v4.0-bias-aware-audited",
+    "purpose": "Nimbus Climate Exposure Ledger: ERA5 Baseline vs 2040 Delta Method",
     "ccts_methodology_statement": "CCTS here = emissions \u00d7 % cut \u00d7 price, with no abatement and no growth to 2040, as a placeholder pending plant baselines.",
     "climate_baseline_source": "ERA5-based reanalysis, not station data",
     "calculation_rules": {
@@ -32,7 +31,10 @@
         "heat_component_api_based_inr_cr_per_year": 22.11,
         "water_coastal_component_judgement_inr_cr_per_year": 24.79,
         "ccts_component_assumption_inr_cr_per_year": 0.0,
-        "ccts_status": "unverified assumption (pending regulatory compliance schedule)",
+        "ccts_status": "not computable from CSV (no FY2023-24 baseline)",
+        "ccts_upper_bound_at_notified_averages_inr_cr_per_year": 44.74,
+        "ccts_upper_bound_at_notified_averages_adjusted_inr_cr_per_year": 56.84,
+        "ccts_upper_bound_statement": "Not computable from CSV (no FY2023-24 baseline); upper bound at notified averages (integrated 2.7%, grinding 6.6%) is \u20b944.74 Cr/yr (direct) or \u20b956.84 Cr/yr (clinker-adjusted)",
         "component_sum_inr_cr_per_year": 46.9,
         "rate_vs_asset_base_pct_per_year": 0.3
       },
@@ -40,7 +42,15 @@
         "heat_component_api_based_inr_cr_per_year": 27.73,
         "water_coastal_component_judgement_inr_cr_per_year": 51.98,
         "ccts_component_case_10pct_annual_inr_cr_per_year": 163.99,
+        "ccts_component_case_10pct_annual_unadjusted_inr_cr_per_year": 163.99,
+        "ccts_component_case_10pct_label": "Stretch 10% (scenario)",
         "ccts_component_case_3pct_annual_inr_cr_per_year": 49.19,
+        "ccts_component_case_3pct_annual_unadjusted_inr_cr_per_year": 49.18,
+        "ccts_component_case_3pct_label": "Illustrative 3% cut",
+        "ccts_component_notified_annual_direct_inr_cr_per_year": 44.74,
+        "ccts_component_notified_annual_adjusted_inr_cr_per_year": 56.84,
+        "ccts_component_notified_label": "Notified rates (integrated 2.7%, grinding 6.6%)",
+        "ccts_horizon_note": "No target runs to 2040; rates represent illustrative compliance scenarios",
         "component_sum_with_10pct_ccts_inr_cr_per_year": 243.7,
         "component_sum_with_3pct_ccts_inr_cr_per_year": 128.9,
         "rate_vs_asset_base_pct_per_year_case_10pct": 1.58,
@@ -55,6 +65,32 @@
         "pct_of_increase_from_water_coastal": 13.8,
         "pct_of_increase_from_ccts": 83.3,
         "statement": "Under the stated assumptions, 83.3% of the increase is regulatory (CCTS liability)."
+      },
+      "chart_stacked_today_vs_2040": {
+        "today": {
+          "label": "Today (Baseline)",
+          "total_inr_cr_per_year": 46.9,
+          "heat_inr_cr_per_year": 22.11,
+          "water_coastal_inr_cr_per_year": 24.79,
+          "ccts_inr_cr_per_year": 0.0,
+          "ccts_note": "Not computable from CSV (no baseline)"
+        },
+        "horizon_2040_stretch_10pct": {
+          "label": "2040 Horizon (Stretch 10% scenario)",
+          "total_inr_cr_per_year": 243.7,
+          "heat_inr_cr_per_year": 27.73,
+          "water_coastal_inr_cr_per_year": 51.98,
+          "ccts_inr_cr_per_year": 163.99,
+          "ccts_note": "Stretch 10% (scenario)"
+        },
+        "horizon_2040_notified_rates": {
+          "label": "2040 Horizon (Notified rates)",
+          "total_inr_cr_per_year": 136.55,
+          "heat_inr_cr_per_year": 27.73,
+          "water_coastal_inr_cr_per_year": 51.98,
+          "ccts_inr_cr_per_year": 56.84,
+          "ccts_note": "Notified rates (2.7% / 6.6%)"
+        }
       }
     }
   },
@@ -136,7 +172,9 @@
           "heat_component_api_based_inr_cr_per_year": 4.38,
           "water_coastal_component_judgement_inr_cr_per_year": 8.0,
           "ccts_component_assumption_inr_cr_per_year": 0.0,
-          "ccts_baseline_status": "unverified assumption (pending regulatory compliance schedule)",
+          "ccts_baseline_status": "not computable from CSV (no FY2023-24 baseline)",
+          "ccts_today_upper_bound_inr_cr_per_year": 12.66,
+          "ccts_today_upper_bound_adjusted_inr_cr_per_year": 8.52,
           "component_breakdown_sum_inr_cr_per_year": 12.38
         },
         "horizon_2040": {
@@ -144,7 +182,14 @@
           "water_coastal_component_judgement_inr_cr_per_year": 16.0,
           "ccts_component_case_10pct_adjusted_inr_cr_per_year": 31.57,
           "ccts_component_case_10pct_unadjusted_inr_cr_per_year": 46.88,
+          "ccts_component_case_10pct_label": "Stretch 10% (scenario)",
           "ccts_component_case_3pct_adjusted_inr_cr_per_year": 9.47,
+          "ccts_component_case_3pct_unadjusted_inr_cr_per_year": 14.06,
+          "ccts_component_case_3pct_label": "Illustrative 3% cut",
+          "ccts_component_notified_adjusted_inr_cr_per_year": 8.52,
+          "ccts_component_notified_unadjusted_inr_cr_per_year": 12.66,
+          "ccts_component_notified_label": "Notified rates (integrated 2.7%, grinding 6.6%)",
+          "ccts_horizon_note": "No target runs to 2040; rates represent illustrative compliance scenarios",
           "component_breakdown_sum_10pct_adjusted_inr_cr_per_year": 54.1,
           "component_breakdown_sum_3pct_adjusted_inr_cr_per_year": 32.0
         },
@@ -237,7 +282,9 @@
           "heat_component_api_based_inr_cr_per_year": 4.55,
           "water_coastal_component_judgement_inr_cr_per_year": 2.59,
           "ccts_component_assumption_inr_cr_per_year": 0.0,
-          "ccts_baseline_status": "unverified assumption (pending regulatory compliance schedule)",
+          "ccts_baseline_status": "not computable from CSV (no FY2023-24 baseline)",
+          "ccts_today_upper_bound_inr_cr_per_year": 6.97,
+          "ccts_today_upper_bound_adjusted_inr_cr_per_year": 6.97,
           "component_breakdown_sum_inr_cr_per_year": 7.14
         },
         "horizon_2040": {
@@ -245,7 +292,14 @@
           "water_coastal_component_judgement_inr_cr_per_year": 6.05,
           "ccts_component_case_10pct_adjusted_inr_cr_per_year": 25.8,
           "ccts_component_case_10pct_unadjusted_inr_cr_per_year": 25.8,
+          "ccts_component_case_10pct_label": "Stretch 10% (scenario)",
           "ccts_component_case_3pct_adjusted_inr_cr_per_year": 7.74,
+          "ccts_component_case_3pct_unadjusted_inr_cr_per_year": 7.74,
+          "ccts_component_case_3pct_label": "Illustrative 3% cut",
+          "ccts_component_notified_adjusted_inr_cr_per_year": 6.97,
+          "ccts_component_notified_unadjusted_inr_cr_per_year": 6.97,
+          "ccts_component_notified_label": "Notified rates (integrated 2.7%, grinding 6.6%)",
+          "ccts_horizon_note": "No target runs to 2040; rates represent illustrative compliance scenarios",
           "component_breakdown_sum_10pct_adjusted_inr_cr_per_year": 37.01,
           "component_breakdown_sum_3pct_adjusted_inr_cr_per_year": 18.95
         },
@@ -338,7 +392,9 @@
           "heat_component_api_based_inr_cr_per_year": 6.22,
           "water_coastal_component_judgement_inr_cr_per_year": 3.64,
           "ccts_component_assumption_inr_cr_per_year": 0.0,
-          "ccts_baseline_status": "unverified assumption (pending regulatory compliance schedule)",
+          "ccts_baseline_status": "not computable from CSV (no FY2023-24 baseline)",
+          "ccts_today_upper_bound_inr_cr_per_year": 6.12,
+          "ccts_today_upper_bound_adjusted_inr_cr_per_year": 6.12,
           "component_breakdown_sum_inr_cr_per_year": 9.86
         },
         "horizon_2040": {
@@ -346,7 +402,14 @@
           "water_coastal_component_judgement_inr_cr_per_year": 7.27,
           "ccts_component_case_10pct_adjusted_inr_cr_per_year": 22.65,
           "ccts_component_case_10pct_unadjusted_inr_cr_per_year": 22.65,
+          "ccts_component_case_10pct_label": "Stretch 10% (scenario)",
           "ccts_component_case_3pct_adjusted_inr_cr_per_year": 6.79,
+          "ccts_component_case_3pct_unadjusted_inr_cr_per_year": 6.79,
+          "ccts_component_case_3pct_label": "Illustrative 3% cut",
+          "ccts_component_notified_adjusted_inr_cr_per_year": 6.12,
+          "ccts_component_notified_unadjusted_inr_cr_per_year": 6.12,
+          "ccts_component_notified_label": "Notified rates (integrated 2.7%, grinding 6.6%)",
+          "ccts_horizon_note": "No target runs to 2040; rates represent illustrative compliance scenarios",
           "component_breakdown_sum_10pct_adjusted_inr_cr_per_year": 37.15,
           "component_breakdown_sum_3pct_adjusted_inr_cr_per_year": 21.29
         },
@@ -439,7 +502,9 @@
           "heat_component_api_based_inr_cr_per_year": 1.49,
           "water_coastal_component_judgement_inr_cr_per_year": 3.36,
           "ccts_component_assumption_inr_cr_per_year": 0.0,
-          "ccts_baseline_status": "unverified assumption (pending regulatory compliance schedule)",
+          "ccts_baseline_status": "not computable from CSV (no FY2023-24 baseline)",
+          "ccts_today_upper_bound_inr_cr_per_year": 4.15,
+          "ccts_today_upper_bound_adjusted_inr_cr_per_year": 4.15,
           "component_breakdown_sum_inr_cr_per_year": 4.85
         },
         "horizon_2040": {
@@ -447,7 +512,14 @@
           "water_coastal_component_judgement_inr_cr_per_year": 6.73,
           "ccts_component_case_10pct_adjusted_inr_cr_per_year": 15.38,
           "ccts_component_case_10pct_unadjusted_inr_cr_per_year": 15.38,
+          "ccts_component_case_10pct_label": "Stretch 10% (scenario)",
           "ccts_component_case_3pct_adjusted_inr_cr_per_year": 4.61,
+          "ccts_component_case_3pct_unadjusted_inr_cr_per_year": 4.61,
+          "ccts_component_case_3pct_label": "Illustrative 3% cut",
+          "ccts_component_notified_adjusted_inr_cr_per_year": 4.15,
+          "ccts_component_notified_unadjusted_inr_cr_per_year": 4.15,
+          "ccts_component_notified_label": "Notified rates (integrated 2.7%, grinding 6.6%)",
+          "ccts_horizon_note": "No target runs to 2040; rates represent illustrative compliance scenarios",
           "component_breakdown_sum_10pct_adjusted_inr_cr_per_year": 24.63,
           "component_breakdown_sum_3pct_adjusted_inr_cr_per_year": 13.86
         },
@@ -540,7 +612,9 @@
           "heat_component_api_based_inr_cr_per_year": 0.58,
           "water_coastal_component_judgement_inr_cr_per_year": 2.35,
           "ccts_component_assumption_inr_cr_per_year": 0.0,
-          "ccts_baseline_status": "unverified assumption (pending regulatory compliance schedule)",
+          "ccts_baseline_status": "not computable from CSV (no FY2023-24 baseline)",
+          "ccts_today_upper_bound_inr_cr_per_year": 4.07,
+          "ccts_today_upper_bound_adjusted_inr_cr_per_year": 4.07,
           "component_breakdown_sum_inr_cr_per_year": 2.93
         },
         "horizon_2040": {
@@ -548,7 +622,14 @@
           "water_coastal_component_judgement_inr_cr_per_year": 5.17,
           "ccts_component_case_10pct_adjusted_inr_cr_per_year": 15.07,
           "ccts_component_case_10pct_unadjusted_inr_cr_per_year": 15.07,
+          "ccts_component_case_10pct_label": "Stretch 10% (scenario)",
           "ccts_component_case_3pct_adjusted_inr_cr_per_year": 4.52,
+          "ccts_component_case_3pct_unadjusted_inr_cr_per_year": 4.52,
+          "ccts_component_case_3pct_label": "Illustrative 3% cut",
+          "ccts_component_notified_adjusted_inr_cr_per_year": 4.07,
+          "ccts_component_notified_unadjusted_inr_cr_per_year": 4.07,
+          "ccts_component_notified_label": "Notified rates (integrated 2.7%, grinding 6.6%)",
+          "ccts_horizon_note": "No target runs to 2040; rates represent illustrative compliance scenarios",
           "component_breakdown_sum_10pct_adjusted_inr_cr_per_year": 21.55,
           "component_breakdown_sum_3pct_adjusted_inr_cr_per_year": 11.0
         },
@@ -641,7 +722,9 @@
           "heat_component_api_based_inr_cr_per_year": 4.49,
           "water_coastal_component_judgement_inr_cr_per_year": 1.16,
           "ccts_component_assumption_inr_cr_per_year": 0.0,
-          "ccts_baseline_status": "unverified assumption (pending regulatory compliance schedule)",
+          "ccts_baseline_status": "not computable from CSV (no FY2023-24 baseline)",
+          "ccts_today_upper_bound_inr_cr_per_year": 10.0,
+          "ccts_today_upper_bound_adjusted_inr_cr_per_year": 5.75,
           "component_breakdown_sum_inr_cr_per_year": 5.65
         },
         "horizon_2040": {
@@ -649,7 +732,14 @@
           "water_coastal_component_judgement_inr_cr_per_year": 3.09,
           "ccts_component_case_10pct_adjusted_inr_cr_per_year": 21.29,
           "ccts_component_case_10pct_unadjusted_inr_cr_per_year": 37.05,
+          "ccts_component_case_10pct_label": "Stretch 10% (scenario)",
           "ccts_component_case_3pct_adjusted_inr_cr_per_year": 6.39,
+          "ccts_component_case_3pct_unadjusted_inr_cr_per_year": 11.12,
+          "ccts_component_case_3pct_label": "Illustrative 3% cut",
+          "ccts_component_notified_adjusted_inr_cr_per_year": 5.75,
+          "ccts_component_notified_unadjusted_inr_cr_per_year": 10.0,
+          "ccts_component_notified_label": "Notified rates (integrated 2.7%, grinding 6.6%)",
+          "ccts_horizon_note": "No target runs to 2040; rates represent illustrative compliance scenarios",
           "component_breakdown_sum_10pct_adjusted_inr_cr_per_year": 28.46,
           "component_breakdown_sum_3pct_adjusted_inr_cr_per_year": 13.56
         },
@@ -742,7 +832,9 @@
           "heat_component_api_based_inr_cr_per_year": 0.1,
           "water_coastal_component_judgement_inr_cr_per_year": 1.21,
           "ccts_component_assumption_inr_cr_per_year": 0.0,
-          "ccts_baseline_status": "unverified assumption (pending regulatory compliance schedule)",
+          "ccts_baseline_status": "not computable from CSV (no FY2023-24 baseline)",
+          "ccts_today_upper_bound_inr_cr_per_year": 0.32,
+          "ccts_today_upper_bound_adjusted_inr_cr_per_year": 10.42,
           "component_breakdown_sum_inr_cr_per_year": 1.31
         },
         "horizon_2040": {
@@ -750,7 +842,14 @@
           "water_coastal_component_judgement_inr_cr_per_year": 2.67,
           "ccts_component_case_10pct_adjusted_inr_cr_per_year": 15.79,
           "ccts_component_case_10pct_unadjusted_inr_cr_per_year": 0.48,
+          "ccts_component_case_10pct_label": "Stretch 10% (scenario)",
           "ccts_component_case_3pct_adjusted_inr_cr_per_year": 4.74,
+          "ccts_component_case_3pct_unadjusted_inr_cr_per_year": 0.14,
+          "ccts_component_case_3pct_label": "Illustrative 3% cut",
+          "ccts_component_notified_adjusted_inr_cr_per_year": 10.42,
+          "ccts_component_notified_unadjusted_inr_cr_per_year": 0.32,
+          "ccts_component_notified_label": "Notified rates (integrated 2.7%, grinding 6.6%)",
+          "ccts_horizon_note": "No target runs to 2040; rates represent illustrative compliance scenarios",
           "component_breakdown_sum_10pct_adjusted_inr_cr_per_year": 18.75,
           "component_breakdown_sum_3pct_adjusted_inr_cr_per_year": 7.7
         },
@@ -843,7 +942,9 @@
           "heat_component_api_based_inr_cr_per_year": 0.01,
           "water_coastal_component_judgement_inr_cr_per_year": 1.75,
           "ccts_component_assumption_inr_cr_per_year": 0.0,
-          "ccts_baseline_status": "unverified assumption (pending regulatory compliance schedule)",
+          "ccts_baseline_status": "not computable from CSV (no FY2023-24 baseline)",
+          "ccts_today_upper_bound_inr_cr_per_year": 0.21,
+          "ccts_today_upper_bound_adjusted_inr_cr_per_year": 5.73,
           "component_breakdown_sum_inr_cr_per_year": 1.76
         },
         "horizon_2040": {
@@ -851,7 +952,14 @@
           "water_coastal_component_judgement_inr_cr_per_year": 3.18,
           "ccts_component_case_10pct_adjusted_inr_cr_per_year": 8.69,
           "ccts_component_case_10pct_unadjusted_inr_cr_per_year": 0.32,
+          "ccts_component_case_10pct_label": "Stretch 10% (scenario)",
           "ccts_component_case_3pct_adjusted_inr_cr_per_year": 2.61,
+          "ccts_component_case_3pct_unadjusted_inr_cr_per_year": 0.09,
+          "ccts_component_case_3pct_label": "Illustrative 3% cut",
+          "ccts_component_notified_adjusted_inr_cr_per_year": 5.73,
+          "ccts_component_notified_unadjusted_inr_cr_per_year": 0.21,
+          "ccts_component_notified_label": "Notified rates (integrated 2.7%, grinding 6.6%)",
+          "ccts_horizon_note": "No target runs to 2040; rates represent illustrative compliance scenarios",
           "component_breakdown_sum_10pct_adjusted_inr_cr_per_year": 11.91,
           "component_breakdown_sum_3pct_adjusted_inr_cr_per_year": 5.83
         },
@@ -944,7 +1052,9 @@
           "heat_component_api_based_inr_cr_per_year": 0.29,
           "water_coastal_component_judgement_inr_cr_per_year": 0.73,
           "ccts_component_assumption_inr_cr_per_year": 0.0,
-          "ccts_baseline_status": "unverified assumption (pending regulatory compliance schedule)",
+          "ccts_baseline_status": "not computable from CSV (no FY2023-24 baseline)",
+          "ccts_today_upper_bound_inr_cr_per_year": 0.24,
+          "ccts_today_upper_bound_adjusted_inr_cr_per_year": 5.11,
           "component_breakdown_sum_inr_cr_per_year": 1.02
         },
         "horizon_2040": {
@@ -952,7 +1062,14 @@
           "water_coastal_component_judgement_inr_cr_per_year": 1.82,
           "ccts_component_case_10pct_adjusted_inr_cr_per_year": 7.75,
           "ccts_component_case_10pct_unadjusted_inr_cr_per_year": 0.36,
+          "ccts_component_case_10pct_label": "Stretch 10% (scenario)",
           "ccts_component_case_3pct_adjusted_inr_cr_per_year": 2.32,
+          "ccts_component_case_3pct_unadjusted_inr_cr_per_year": 0.11,
+          "ccts_component_case_3pct_label": "Illustrative 3% cut",
+          "ccts_component_notified_adjusted_inr_cr_per_year": 5.11,
+          "ccts_component_notified_unadjusted_inr_cr_per_year": 0.24,
+          "ccts_component_notified_label": "Notified rates (integrated 2.7%, grinding 6.6%)",
+          "ccts_horizon_note": "No target runs to 2040; rates represent illustrative compliance scenarios",
           "component_breakdown_sum_10pct_adjusted_inr_cr_per_year": 10.14,
           "component_breakdown_sum_3pct_adjusted_inr_cr_per_year": 4.71
         },

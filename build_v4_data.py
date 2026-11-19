@@ -60,8 +60,8 @@ with open('open_meteo_10yr_cache.json', 'r') as f:
 with open('enriched_plants_data.json', 'r') as f:
     old_data = json.load(f)
     flood_map = {p['plant_id']: {
-        'river_discharge_mean_m3s': p['physical_climate_data'].get('hydrological_context_flood_api', {}).get('river_discharge_mean_m3s'),
-        'river_discharge_max_m3s': p['physical_climate_data'].get('hydrological_context_flood_api', {}).get('river_discharge_max_m3s')
+        'river_discharge_mean_m3s': p.get('physical_climate_data_bias_aware', p.get('physical_climate_data', {})).get('hydrological_context_flood_api', {}).get('river_discharge_mean_m3s'),
+        'river_discharge_max_m3s': p.get('physical_climate_data_bias_aware', p.get('physical_climate_data', {})).get('hydrological_context_flood_api', {}).get('river_discharge_max_m3s')
     } for p in old_data['plants']}
 
 # 4. Construct Comprehensive assumptions.json
@@ -241,6 +241,10 @@ for p in plants_raw:
     ccts_10pct_adj = round((scope1_adj * 1000.0 * 0.10 * CARBON_PRICE) / 1e7, 2)
     ccts_10pct_unadj = round((scope1_raw * 1000.0 * 0.10 * CARBON_PRICE) / 1e7, 2)
     
+    rate_notified = 0.027 if ptype == 'Integrated' else 0.066
+    ccts_notified_unadj = round((scope1_raw * 1000.0 * rate_notified * CARBON_PRICE) / 1e7, 2)
+    ccts_notified_adj = round((scope1_adj * 1000.0 * rate_notified * CARBON_PRICE) / 1e7, 2)
+    
     ccts_base = 0.0
     delta_ccts_10 = round(ccts_10pct_adj - ccts_base, 2)
     delta_ccts_3 = round(ccts_3pct_adj - ccts_base, 2)
@@ -330,7 +334,9 @@ for p in plants_raw:
                 "heat_component_api_based_inr_cr_per_year": heat_ebitda_base,
                 "water_coastal_component_judgement_inr_cr_per_year": wc_ebitda_base,
                 "ccts_component_assumption_inr_cr_per_year": ccts_base,
-                "ccts_baseline_status": "unverified assumption (pending regulatory compliance schedule)",
+                "ccts_baseline_status": "not computable from CSV (no FY2023-24 baseline)",
+                "ccts_today_upper_bound_inr_cr_per_year": ccts_notified_unadj,
+                "ccts_today_upper_bound_adjusted_inr_cr_per_year": ccts_notified_adj,
                 "component_breakdown_sum_inr_cr_per_year": tot_base
             },
             "horizon_2040": {
@@ -338,7 +344,14 @@ for p in plants_raw:
                 "water_coastal_component_judgement_inr_cr_per_year": wc_ebitda_2040,
                 "ccts_component_case_10pct_adjusted_inr_cr_per_year": ccts_10pct_adj,
                 "ccts_component_case_10pct_unadjusted_inr_cr_per_year": ccts_10pct_unadj,
+                "ccts_component_case_10pct_label": "Stretch 10% (scenario)",
                 "ccts_component_case_3pct_adjusted_inr_cr_per_year": ccts_3pct_adj,
+                "ccts_component_case_3pct_unadjusted_inr_cr_per_year": ccts_3pct_unadj,
+                "ccts_component_case_3pct_label": "Illustrative 3% cut",
+                "ccts_component_notified_adjusted_inr_cr_per_year": ccts_notified_adj,
+                "ccts_component_notified_unadjusted_inr_cr_per_year": ccts_notified_unadj,
+                "ccts_component_notified_label": "Notified rates (integrated 2.7%, grinding 6.6%)",
+                "ccts_horizon_note": "No target runs to 2040; rates represent illustrative compliance scenarios",
                 "component_breakdown_sum_10pct_adjusted_inr_cr_per_year": tot_2040_10,
                 "component_breakdown_sum_3pct_adjusted_inr_cr_per_year": tot_2040_3
             },
@@ -367,7 +380,9 @@ fleet_wc_2040 = round(sum(p['three_component_financial_exposure_inr_cr_per_year'
 fleet_ccts_10_adj = round(sum(p['three_component_financial_exposure_inr_cr_per_year']['horizon_2040']['ccts_component_case_10pct_adjusted_inr_cr_per_year'] for p in plants_enriched), 2)
 fleet_ccts_10_unadj = round(sum(p['three_component_financial_exposure_inr_cr_per_year']['horizon_2040']['ccts_component_case_10pct_unadjusted_inr_cr_per_year'] for p in plants_enriched), 2)
 fleet_ccts_3_adj = round(sum(p['three_component_financial_exposure_inr_cr_per_year']['horizon_2040']['ccts_component_case_3pct_adjusted_inr_cr_per_year'] for p in plants_enriched), 2)
-fleet_ccts_3_unadj = round(sum(p['three_component_financial_exposure_inr_cr_per_year']['horizon_2040']['ccts_component_case_3pct_adjusted_inr_cr_per_year'] for p in plants_enriched), 2)
+fleet_ccts_3_unadj = round(sum(p['three_component_financial_exposure_inr_cr_per_year']['horizon_2040']['ccts_component_case_3pct_unadjusted_inr_cr_per_year'] for p in plants_enriched), 2)
+fleet_ccts_notified_adj = round(sum(p['three_component_financial_exposure_inr_cr_per_year']['horizon_2040']['ccts_component_notified_adjusted_inr_cr_per_year'] for p in plants_enriched), 2)
+fleet_ccts_notified_unadj = round(sum(p['three_component_financial_exposure_inr_cr_per_year']['horizon_2040']['ccts_component_notified_unadjusted_inr_cr_per_year'] for p in plants_enriched), 2)
 
 fleet_tot_2040_10 = round(sum(p['three_component_financial_exposure_inr_cr_per_year']['horizon_2040']['component_breakdown_sum_10pct_adjusted_inr_cr_per_year'] for p in plants_enriched), 2)
 fleet_tot_2040_3 = round(sum(p['three_component_financial_exposure_inr_cr_per_year']['horizon_2040']['component_breakdown_sum_3pct_adjusted_inr_cr_per_year'] for p in plants_enriched), 2)
@@ -398,7 +413,10 @@ portfolio_summary = {
             "heat_component_api_based_inr_cr_per_year": fleet_heat_base,
             "water_coastal_component_judgement_inr_cr_per_year": fleet_wc_base,
             "ccts_component_assumption_inr_cr_per_year": fleet_ccts_base,
-            "ccts_status": "unverified assumption (pending regulatory compliance schedule)",
+            "ccts_status": "not computable from CSV (no FY2023-24 baseline)",
+            "ccts_upper_bound_at_notified_averages_inr_cr_per_year": fleet_ccts_notified_unadj,
+            "ccts_upper_bound_at_notified_averages_adjusted_inr_cr_per_year": fleet_ccts_notified_adj,
+            "ccts_upper_bound_statement": f"Not computable from CSV (no FY2023-24 baseline); upper bound at notified averages (integrated 2.7%, grinding 6.6%) is ₹{fleet_ccts_notified_unadj:.2f} Cr/yr (direct) or ₹{fleet_ccts_notified_adj:.2f} Cr/yr (clinker-adjusted)",
             "component_sum_inr_cr_per_year": fleet_tot_base,
             "rate_vs_asset_base_pct_per_year": round((fleet_tot_base / total_asset_val) * 100.0, 2)
         },
@@ -406,7 +424,15 @@ portfolio_summary = {
             "heat_component_api_based_inr_cr_per_year": fleet_heat_2040,
             "water_coastal_component_judgement_inr_cr_per_year": fleet_wc_2040,
             "ccts_component_case_10pct_annual_inr_cr_per_year": fleet_ccts_10_adj,
+            "ccts_component_case_10pct_annual_unadjusted_inr_cr_per_year": fleet_ccts_10_unadj,
+            "ccts_component_case_10pct_label": "Stretch 10% (scenario)",
             "ccts_component_case_3pct_annual_inr_cr_per_year": fleet_ccts_3_adj,
+            "ccts_component_case_3pct_annual_unadjusted_inr_cr_per_year": fleet_ccts_3_unadj,
+            "ccts_component_case_3pct_label": "Illustrative 3% cut",
+            "ccts_component_notified_annual_direct_inr_cr_per_year": fleet_ccts_notified_unadj,
+            "ccts_component_notified_annual_adjusted_inr_cr_per_year": fleet_ccts_notified_adj,
+            "ccts_component_notified_label": "Notified rates (integrated 2.7%, grinding 6.6%)",
+            "ccts_horizon_note": "No target runs to 2040; rates represent illustrative compliance scenarios",
             "component_sum_with_10pct_ccts_inr_cr_per_year": fleet_tot_2040_10,
             "component_sum_with_3pct_ccts_inr_cr_per_year": fleet_tot_2040_3,
             "rate_vs_asset_base_pct_per_year_case_10pct": round((fleet_tot_2040_10 / total_asset_val) * 100.0, 2),
@@ -421,6 +447,32 @@ portfolio_summary = {
             "pct_of_increase_from_water_coastal": fleet_pct_wc,
             "pct_of_increase_from_ccts": fleet_pct_ccts,
             "statement": f"Under the stated assumptions, {fleet_pct_ccts}% of the increase is regulatory (CCTS liability)."
+        },
+        "chart_stacked_today_vs_2040": {
+            "today": {
+                "label": "Today (Baseline)",
+                "total_inr_cr_per_year": fleet_tot_base,
+                "heat_inr_cr_per_year": fleet_heat_base,
+                "water_coastal_inr_cr_per_year": fleet_wc_base,
+                "ccts_inr_cr_per_year": 0.0,
+                "ccts_note": "Not computable from CSV (no baseline)"
+            },
+            "horizon_2040_stretch_10pct": {
+                "label": "2040 Horizon (Stretch 10% scenario)",
+                "total_inr_cr_per_year": fleet_tot_2040_10,
+                "heat_inr_cr_per_year": fleet_heat_2040,
+                "water_coastal_inr_cr_per_year": fleet_wc_2040,
+                "ccts_inr_cr_per_year": fleet_ccts_10_adj,
+                "ccts_note": "Stretch 10% (scenario)"
+            },
+            "horizon_2040_notified_rates": {
+                "label": "2040 Horizon (Notified rates)",
+                "total_inr_cr_per_year": round(fleet_heat_2040 + fleet_wc_2040 + fleet_ccts_notified_adj, 2),
+                "heat_inr_cr_per_year": fleet_heat_2040,
+                "water_coastal_inr_cr_per_year": fleet_wc_2040,
+                "ccts_inr_cr_per_year": fleet_ccts_notified_adj,
+                "ccts_note": "Notified rates (2.7% / 6.6%)"
+            }
         }
     }
 }
@@ -429,8 +481,7 @@ full_output = {
     "metadata": {
         "company": "Nimbus Cement Ltd",
         "author": "Meera Iyer (Head of Sustainability)",
-        "purpose": "Climate Exposure & Transition Risk Ledger: ERA5 Baseline vs 2040 Delta Method",
-        "audit_version": "v4.0-bias-aware-audited",
+        "purpose": "Nimbus Climate Exposure Ledger: ERA5 Baseline vs 2040 Delta Method",
         "ccts_methodology_statement": "CCTS here = emissions × % cut × price, with no abatement and no growth to 2040, as a placeholder pending plant baselines.",
         "climate_baseline_source": "ERA5-based reanalysis, not station data",
         "calculation_rules": assumptions["metadata_rules"]
@@ -440,11 +491,16 @@ full_output = {
     "plants": plants_enriched
 }
 
+import shutil
+
 with open('assumptions.json', 'w') as f:
     json.dump(assumptions, f, indent=2)
 
 with open('enriched_plants_data.json', 'w') as f:
     json.dump(full_output, f, indent=2)
+
+shutil.copy('assumptions.json', 'src/data/assumptions.json')
+shutil.copy('enriched_plants_data.json', 'src/data/enriched_plants_data.json')
 
 print("V4 Bias-Aware build complete!")
 print(f"Baseline: Heat={fleet_heat_base}, WC={fleet_wc_base}, CCTS={fleet_ccts_base} -> Total={fleet_tot_base} Cr/yr")

@@ -22,7 +22,8 @@ import {
   X,
   CheckCircle2,
   Thermometer,
-  Waves
+  Waves,
+  BarChart3
 } from 'lucide-react'
 
 export default function App() {
@@ -38,59 +39,9 @@ export default function App() {
   const baseline = headline.baseline_2015_2024
   const horizon = headline.horizon_2040
   const attribution = headline.fleet_increase_attribution_baseline_to_2040
+  const chartData = headline.chart_stacked_today_vs_2040
 
   const selectedPlant = plants.find(p => p.plant_id === selectedPlantId) || null
-
-  const handleDownloadCSV = () => {
-    const headers = [
-      'plant_id',
-      'plant_name',
-      'town',
-      'state',
-      'latitude',
-      'longitude',
-      'plant_type',
-      'cement_capacity_mtpa',
-      'cement_output_fy2025_26_mt',
-      'clinker_produced_fy2025_26_mt',
-      'clinker_shipped_fy2025_26_mt',
-      'scope1_co2_fy2025_26_kt',
-      'water_source',
-      'coastal',
-      'asset_value_inr_cr',
-      'revenue_fy2025_26_inr_cr',
-      'employees',
-      'notes'
-    ]
-    const rows = plants.map(p => [
-      p.plant_id,
-      `"${p.plant_name}"`,
-      p.town,
-      p.state,
-      p.latitude,
-      p.longitude,
-      `"${p.plant_type}"`,
-      p.cement_capacity_mtpa.toFixed(1),
-      p.cement_output_fy2025_26_mt.toFixed(2),
-      p.clinker_produced_fy2025_26_mt.toFixed(2),
-      p.clinker_shipped_fy2025_26_mt.toFixed(2),
-      p.emissions.unadjusted_direct_scope1_kt.toFixed(0),
-      `"${p.water_source}"`,
-      p.coastal,
-      p.asset_value_inr_cr.toFixed(0),
-      p.revenue_fy2025_26_inr_cr.toFixed(0),
-      p.employees,
-      `"${p.notes || ''}"`
-    ])
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n')
-    const encodedUri = encodeURI(csvContent)
-    const link = document.createElement('a')
-    link.setAttribute('href', encodedUri)
-    link.setAttribute('download', 'nimbus_cement_plants.csv')
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
 
   // Flatten general assumptions for audit registry table
   const auditRegistryGeneral = [
@@ -127,7 +78,7 @@ export default function App() {
       value: '10% [40-43°C), 35% [≥43°C]',
       unit: 'loss factor (50% GU damping)',
       status: 'Assumption',
-      justification: 'Kiln refractory maintenance, captive quarry safety curtailment, and equipment cooling derating'
+      justification: 'Refractory protection, captive quarry health & safety curtailment, equipment cooling derating'
     },
     {
       parameter: 'CCTS Carbon Price',
@@ -138,23 +89,23 @@ export default function App() {
     },
     {
       parameter: 'CCTS Compliance Baseline',
-      value: '₹0.00 Cr / yr (Today)',
-      unit: 'baseline penalty',
-      status: assumptionsData.ccts_transition_risk_assumptions.baseline_penalty_status.source_status,
-      justification: assumptionsData.ccts_transition_risk_assumptions.baseline_penalty_status.justification
+      value: 'Not computable from CSV (no FY2023-24 baseline)',
+      unit: 'historical GEI baseline',
+      status: 'Data Limitation',
+      justification: 'Compliance under BEE rules requires plant-specific FY2023-24 emissions intensity baselines not present in the current CSV.'
     },
     {
-      parameter: 'CCTS Reduction Targets',
-      value: '3% (lower bound) vs 10% (headline)',
+      parameter: 'CCTS Reduction Rates',
+      value: 'Notified averages (integrated 2.7%, grinding 6.6%) vs Stretch 10% (scenario)',
       unit: 'mandated GEI cut',
-      status: assumptionsData.ccts_transition_risk_assumptions.ccts_scenarios_evaluated.source_status,
-      justification: assumptionsData.ccts_transition_risk_assumptions.ccts_scenarios_evaluated.justification
+      status: 'Illustrative Scenario',
+      justification: 'Evaluates official notified rates against a 10% stretch scenario. No gazetted target runs to 2040.'
     }
   ]
 
   return (
     <div className="min-h-screen bg-white text-oren-navy flex flex-col font-sans">
-      {/* Top Bar (White with Navy bold wordmark, download pill, no fake nav) */}
+      {/* Top Bar (Unified Product Name: Nimbus Climate Exposure Ledger) */}
       <header className="border-b border-oren-line bg-white sticky top-0 z-30">
         <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -164,26 +115,27 @@ export default function App() {
             <div>
               <div className="flex items-center gap-2.5">
                 <span className="font-display font-bold text-lg text-oren-navy tracking-tight">
-                  Nimbus Climate Exposure
+                  Nimbus Climate Exposure Ledger
                 </span>
                 <span className="text-xs px-2.5 py-0.5 rounded-full bg-oren-soft text-oren-navy font-medium">
                   Meera Iyer · Head of Sustainability
                 </span>
               </div>
               <p className="text-xs text-oren-muted">
-                Executive Decision Ledger · SEBI BRSR Core & Board Compliance
+                Executive Decision Ledger · Physical Climate & Regulatory Transition Intelligence
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              onClick={handleDownloadCSV}
+            <a
+              href="./nimbus_cement_plants.csv"
+              download="nimbus_cement_plants.csv"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold bg-oren-soft text-oren-navy hover:bg-oren-line transition-colors"
             >
               <Download className="w-3.5 h-3.5 text-oren-teal" />
               Download source CSV
-            </button>
+            </a>
           </div>
         </div>
       </header>
@@ -195,18 +147,163 @@ export default function App() {
         <section className="bg-gradient-to-r from-oren-deep to-oren-navy text-white rounded-hero p-8 sm:p-10 shadow-oren relative overflow-hidden">
           <div className="max-w-3xl space-y-3 relative z-10">
             <span className="text-xs font-semibold tracking-wide uppercase px-3 py-1 rounded-full bg-white/10 text-white border border-white/15 inline-block">
-              Board of Directors & Investor Climate Briefing
+              Nimbus Climate Exposure Ledger · Executive Briefing
             </span>
             <h1 className="text-3xl sm:text-4xl font-display font-bold text-white tracking-tight leading-tight">
               What is our business exposure to climate events today and by 2040?
             </h1>
-            <p className="text-sm sm:text-base text-chart-grey font-normal leading-relaxed pt-1">
+            <p className="text-xs sm:text-sm text-chart-grey font-normal leading-relaxed pt-1">
               Nimbus Cement Ltd · 9 manufacturing plants across India · ₹15,450 Cr gross asset base · 23.00 MTPA capacity · 18.35 Mt annual output.
             </p>
           </div>
         </section>
 
-        {/* Three KPI Cards (Heat, Water & Coastal, CCTS) */}
+        {/* Stacked Today vs 2040 Chart (Oren Look and Feel) */}
+        <section className="bg-white rounded-card p-6 sm:p-7 border border-oren-line shadow-oren space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-oren-line pb-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <BarChart3 className="w-4 h-4 text-oren-teal" />
+                <h2 className="text-lg font-display font-bold text-oren-navy">
+                  Portfolio Climate Exposure: Today vs 2040
+                </h2>
+                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-oren-amberBg text-oren-amber border border-oren-amber/40 border-dashed">
+                  includes assumptions
+                </span>
+              </div>
+              <p className="text-xs text-oren-muted mt-0.5">
+                Annual financial exposure in ₹ Crores / year comparing empirical baseline against 2040 projections.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4 text-xs">
+              <span className="flex items-center gap-1.5 font-medium text-oren-navy">
+                <span className="w-3 h-3 rounded-full bg-[#EA9A6E]" /> Heat (API-based)
+              </span>
+              <span className="flex items-center gap-1.5 font-medium text-oren-navy">
+                <span className="w-3 h-3 rounded-full bg-[#8CB080]" /> Water & Coastal (Assumption)
+              </span>
+              <span className="flex items-center gap-1.5 font-medium text-oren-navy">
+                <span className="w-3 h-3 rounded-full bg-[#1E2B56]" /> CCTS Carbon (Scenario)
+              </span>
+            </div>
+          </div>
+
+          {/* Stacked Bars Comparison */}
+          <div className="space-y-4 pt-1">
+            {/* Row 1: Today */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs font-semibold text-oren-navy">
+                <span className="flex items-center gap-2">
+                  <span>Today (2015–2024 Empirical Baseline)</span>
+                  <span className="text-xs text-oren-muted font-normal">
+                    (CCTS baseline not computable from CSV)
+                  </span>
+                </span>
+                <span className="tabular-nums font-bold text-oren-navy">
+                  ₹{chartData.today.total_inr_cr_per_year.toFixed(2)} Cr / yr
+                </span>
+              </div>
+              <div className="h-8 rounded-xl bg-oren-surface flex overflow-hidden border border-oren-line">
+                <div
+                  style={{ width: `${(chartData.today.heat_inr_cr_per_year / 250) * 100}%` }}
+                  className="bg-[#EA9A6E] h-full flex items-center justify-center text-xs font-bold text-white px-2"
+                  title={`Extreme Heat: ₹${chartData.today.heat_inr_cr_per_year.toFixed(2)} Cr/yr`}
+                >
+                  ₹{chartData.today.heat_inr_cr_per_year.toFixed(2)}
+                </div>
+                <div
+                  style={{ width: `${(chartData.today.water_coastal_inr_cr_per_year / 250) * 100}%` }}
+                  className="bg-[#8CB080] h-full flex items-center justify-center text-xs font-bold text-white px-2"
+                  title={`Water & Coastal: ₹${chartData.today.water_coastal_inr_cr_per_year.toFixed(2)} Cr/yr`}
+                >
+                  ₹{chartData.today.water_coastal_inr_cr_per_year.toFixed(2)}
+                </div>
+                <div className="flex-1 bg-oren-surface border-l border-dashed border-oren-line flex items-center px-3 text-xs text-oren-muted italic">
+                  CCTS: Not computable from CSV (no FY2023-24 baseline)
+                </div>
+              </div>
+            </div>
+
+            {/* Row 2: 2040 Horizon (Stretch 10% Scenario) */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs font-semibold text-oren-navy">
+                <span className="flex items-center gap-2">
+                  <span>2040 Horizon (with Stretch 10% Scenario)</span>
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-oren-amberBg text-oren-amber border border-oren-amber/40 border-dashed">
+                    includes assumptions
+                  </span>
+                </span>
+                <span className="tabular-nums font-bold text-oren-navy">
+                  ₹{chartData.horizon_2040_stretch_10pct.total_inr_cr_per_year.toFixed(2)} Cr / yr
+                </span>
+              </div>
+              <div className="h-8 rounded-xl bg-oren-surface flex overflow-hidden border border-oren-line">
+                <div
+                  style={{ width: `${(chartData.horizon_2040_stretch_10pct.heat_inr_cr_per_year / 250) * 100}%` }}
+                  className="bg-[#EA9A6E] h-full flex items-center justify-center text-xs font-bold text-white px-2"
+                  title={`Extreme Heat: ₹${chartData.horizon_2040_stretch_10pct.heat_inr_cr_per_year.toFixed(2)} Cr/yr`}
+                >
+                  ₹{chartData.horizon_2040_stretch_10pct.heat_inr_cr_per_year.toFixed(2)}
+                </div>
+                <div
+                  style={{ width: `${(chartData.horizon_2040_stretch_10pct.water_coastal_inr_cr_per_year / 250) * 100}%` }}
+                  className="bg-[#8CB080] h-full flex items-center justify-center text-xs font-bold text-white px-2"
+                  title={`Water & Coastal: ₹${chartData.horizon_2040_stretch_10pct.water_coastal_inr_cr_per_year.toFixed(2)} Cr/yr`}
+                >
+                  ₹{chartData.horizon_2040_stretch_10pct.water_coastal_inr_cr_per_year.toFixed(2)}
+                </div>
+                <div
+                  style={{ width: `${(chartData.horizon_2040_stretch_10pct.ccts_inr_cr_per_year / 250) * 100}%` }}
+                  className="bg-[#1E2B56] h-full flex items-center justify-center text-xs font-bold text-white px-2"
+                  title={`CCTS Carbon (10%): ₹${chartData.horizon_2040_stretch_10pct.ccts_inr_cr_per_year.toFixed(2)} Cr/yr`}
+                >
+                  ₹{chartData.horizon_2040_stretch_10pct.ccts_inr_cr_per_year.toFixed(2)}
+                </div>
+              </div>
+            </div>
+
+            {/* Row 3: 2040 Horizon (Notified Rates Case) */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs font-semibold text-oren-navy">
+                <span className="flex items-center gap-2">
+                  <span>2040 Horizon (with Notified Rates: Integrated 2.7%, Grinding 6.6%)</span>
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-oren-amberBg text-oren-amber border border-oren-amber/40 border-dashed">
+                    includes assumptions
+                  </span>
+                </span>
+                <span className="tabular-nums font-bold text-oren-navy">
+                  ₹{(chartData.horizon_2040_notified_rates.heat_inr_cr_per_year + chartData.horizon_2040_notified_rates.water_coastal_inr_cr_per_year + (clinkerAdjusted ? headline.horizon_2040.ccts_component_notified_annual_adjusted_inr_cr_per_year : headline.horizon_2040.ccts_component_notified_annual_direct_inr_cr_per_year)).toFixed(2)} Cr / yr
+                </span>
+              </div>
+              <div className="h-8 rounded-xl bg-oren-surface flex overflow-hidden border border-oren-line">
+                <div
+                  style={{ width: `${(chartData.horizon_2040_notified_rates.heat_inr_cr_per_year / 250) * 100}%` }}
+                  className="bg-[#EA9A6E] h-full flex items-center justify-center text-xs font-bold text-white px-2"
+                  title={`Extreme Heat: ₹${chartData.horizon_2040_notified_rates.heat_inr_cr_per_year.toFixed(2)} Cr/yr`}
+                >
+                  ₹{chartData.horizon_2040_notified_rates.heat_inr_cr_per_year.toFixed(2)}
+                </div>
+                <div
+                  style={{ width: `${(chartData.horizon_2040_notified_rates.water_coastal_inr_cr_per_year / 250) * 100}%` }}
+                  className="bg-[#8CB080] h-full flex items-center justify-center text-xs font-bold text-white px-2"
+                  title={`Water & Coastal: ₹${chartData.horizon_2040_notified_rates.water_coastal_inr_cr_per_year.toFixed(2)} Cr/yr`}
+                >
+                  ₹{chartData.horizon_2040_notified_rates.water_coastal_inr_cr_per_year.toFixed(2)}
+                </div>
+                <div
+                  style={{ width: `${((clinkerAdjusted ? headline.horizon_2040.ccts_component_notified_annual_adjusted_inr_cr_per_year : headline.horizon_2040.ccts_component_notified_annual_direct_inr_cr_per_year) / 250) * 100}%` }}
+                  className="bg-[#1E2B56] h-full flex items-center justify-center text-xs font-bold text-white px-2 opacity-90"
+                  title={`CCTS Notified: ₹${(clinkerAdjusted ? headline.horizon_2040.ccts_component_notified_annual_adjusted_inr_cr_per_year : headline.horizon_2040.ccts_component_notified_annual_direct_inr_cr_per_year).toFixed(2)} Cr/yr`}
+                >
+                  ₹{(clinkerAdjusted ? headline.horizon_2040.ccts_component_notified_annual_adjusted_inr_cr_per_year : headline.horizon_2040.ccts_component_notified_annual_direct_inr_cr_per_year).toFixed(2)}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Three Decoupled KPI Cards */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* KPI Card 1: Extreme Heat */}
           <div className="bg-white rounded-card p-6 border border-oren-line shadow-oren flex flex-col justify-between">
@@ -234,7 +331,7 @@ export default function App() {
                   <span className="text-4xl font-display font-bold text-oren-navy tabular-nums">
                     ₹{horizon.heat_component_api_based_inr_cr_per_year.toFixed(2)}
                   </span>
-                  <span className="text-sm font-medium text-oren-muted">₹ Cr / yr</span>
+                  <span className="text-xs font-medium text-oren-muted">₹ Cr / yr</span>
                 </div>
               </div>
 
@@ -278,7 +375,7 @@ export default function App() {
                   <span className="text-4xl font-display font-bold text-oren-navy tabular-nums">
                     ₹{horizon.water_coastal_component_judgement_inr_cr_per_year.toFixed(2)}
                   </span>
-                  <span className="text-sm font-medium text-oren-muted">₹ Cr / yr</span>
+                  <span className="text-xs font-medium text-oren-muted">₹ Cr / yr</span>
                 </div>
               </div>
 
@@ -304,38 +401,47 @@ export default function App() {
                   Transition Risk
                 </span>
                 <span className="text-xs px-2.5 py-0.5 rounded-full bg-oren-amberBg text-oren-amber border border-oren-amber/40 border-dashed font-semibold">
-                  Assumption, illustrative
+                  Assumption · Scenario
                 </span>
               </div>
               <h2 className="text-xl font-display font-bold text-oren-navy">
                 CCTS carbon cost
               </h2>
               <p className="text-xs text-oren-muted leading-relaxed">
-                Projected penalty under India's Carbon Credit Trading Scheme @ ₹1,500/tCO₂ above baseline.
+                India's Carbon Credit Trading Scheme @ ₹1,500/tCO₂ above plant baseline. No target runs to 2040.
               </p>
             </div>
 
-            <div className="mt-6 pt-5 border-t border-oren-line space-y-4">
-              <div>
-                <div className="text-xs text-oren-muted mb-1">2040 liability (10% cut case)</div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-display font-bold text-oren-navy tabular-nums">
-                    ₹{horizon.ccts_component_case_10pct_annual_inr_cr_per_year.toFixed(2)}
-                  </span>
-                  <span className="text-sm font-medium text-oren-muted">₹ Cr / yr</span>
+            <div className="mt-6 pt-5 border-t border-oren-line space-y-3">
+              <div className="flex items-baseline justify-between">
+                <div>
+                  <div className="text-xs text-oren-muted mb-0.5">Stretch 10% scenario</div>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-3xl font-display font-bold text-oren-navy tabular-nums">
+                      ₹{horizon.ccts_component_case_10pct_annual_inr_cr_per_year.toFixed(2)}
+                    </span>
+                    <span className="text-xs font-medium text-oren-muted">Cr/yr</span>
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <div className="text-xs text-oren-muted mb-0.5">Notified rates (2.7% / 6.6%)</div>
+                  <div className="flex items-baseline justify-end gap-1.5">
+                    <span className="text-2xl font-display font-bold text-oren-navy tabular-nums">
+                      ₹{(clinkerAdjusted ? horizon.ccts_component_notified_annual_adjusted_inr_cr_per_year : horizon.ccts_component_notified_annual_direct_inr_cr_per_year).toFixed(2)}
+                    </span>
+                    <span className="text-xs font-medium text-oren-muted">Cr/yr</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-oren-surface rounded-xl p-3 flex items-center justify-between text-xs">
-                <div>
-                  <span className="text-oren-muted">3% cut lower case: </span>
-                  <span className="font-semibold text-oren-navy tabular-nums">
-                    ₹{horizon.ccts_component_case_3pct_annual_inr_cr_per_year.toFixed(2)} Cr/yr
-                  </span>
+              <div className="bg-oren-surface rounded-xl p-2.5 space-y-1 text-xs">
+                <div className="font-semibold text-oren-navy">
+                  Today: not computable from CSV (no FY2023-24 baseline)
                 </div>
-                <span className="text-xs text-oren-muted">
-                  Today: ₹0.00 Cr/yr*
-                </span>
+                <div className="text-oren-muted">
+                  Upper bound at notified averages: ₹{(clinkerAdjusted ? baseline.ccts_upper_bound_at_notified_averages_adjusted_inr_cr_per_year : baseline.ccts_upper_bound_at_notified_averages_inr_cr_per_year).toFixed(2)} Cr/yr
+                </div>
               </div>
             </div>
           </div>
@@ -375,28 +481,28 @@ export default function App() {
                   <div
                     style={{ width: `${attribution.pct_of_increase_from_ccts}%` }}
                     className="bg-oren-navy h-full"
-                    title={`Regulatory CCTS: ${attribution.pct_of_increase_from_ccts.toFixed(1)}%`}
+                    title={`Regulatory CCTS: ${attribution.pct_of_increase_from_ccts}%`}
                   />
                   <div
                     style={{ width: `${attribution.pct_of_increase_from_water_coastal}%` }}
                     className="bg-chart-water h-full"
-                    title={`Water & Coastal: ${attribution.pct_of_increase_from_water_coastal.toFixed(1)}%`}
+                    title={`Water & Coastal: ${attribution.pct_of_increase_from_water_coastal}%`}
                   />
                   <div
                     style={{ width: `${attribution.pct_of_increase_from_heat}%` }}
                     className="bg-chart-heat h-full"
-                    title={`Extreme Heat: ${attribution.pct_of_increase_from_heat.toFixed(1)}%`}
+                    title={`Extreme Heat: ${attribution.pct_of_increase_from_heat}%`}
                   />
                 </div>
-                <div className="flex justify-between text-[11px] text-oren-muted tabular-nums">
+                <div className="flex justify-between text-xs text-oren-muted tabular-nums">
                   <span className="flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-oren-navy inline-block" /> CCTS 83.3%
+                    <span className="w-2 h-2 rounded-full bg-oren-navy inline-block" /> CCTS {attribution.pct_of_increase_from_ccts}%
                   </span>
                   <span className="flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-chart-water inline-block" /> Water 13.8%
+                    <span className="w-2 h-2 rounded-full bg-chart-water inline-block" /> Water {attribution.pct_of_increase_from_water_coastal}%
                   </span>
                   <span className="flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-chart-heat inline-block" /> Heat 2.9%
+                    <span className="w-2 h-2 rounded-full bg-chart-heat inline-block" /> Heat {attribution.pct_of_increase_from_heat}%
                   </span>
                 </div>
               </div>
@@ -458,7 +564,7 @@ export default function App() {
               </button>
             </div>
             <div className="text-xs text-oren-muted bg-white px-3 py-1 rounded-full border border-oren-line font-medium tabular-nums">
-              Fleet total: <strong className="text-oren-navy">10,932 kt CO₂</strong> (invariant)
+              Fleet total: <strong className="text-oren-navy">{portfolio_summary.portfolio_totals.total_scope1_co2_kt.toLocaleString()} kt CO₂</strong> (invariant)
             </div>
           </div>
         </section>
@@ -475,60 +581,66 @@ export default function App() {
                   Click any factory row to inspect local physical hazards and transition calculations.
                 </p>
               </div>
-              <div className="flex items-center gap-2 text-xs text-oren-muted">
-                <span className="inline-block w-2.5 h-2.5 rounded-full bg-teal-50 border border-oren-teal"></span>
-                <span>API-based</span>
-                <span className="inline-block w-2.5 h-2.5 rounded-full bg-oren-amberBg border border-oren-amber border-dashed ml-3"></span>
-                <span>Assumption</span>
+              <div className="flex items-center gap-3 text-xs">
+                <span className="flex items-center gap-1.5 text-oren-teal font-medium">
+                  <span className="w-2.5 h-2.5 rounded-full bg-teal-50 border border-oren-teal"></span>
+                  API-based
+                </span>
+                <span className="flex items-center gap-1.5 text-oren-amber font-medium">
+                  <span className="w-2.5 h-2.5 rounded-full bg-oren-amberBg border border-oren-amber border-dashed"></span>
+                  Assumption / Scenario
+                </span>
               </div>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-oren-navy">
-                <thead className="bg-oren-surface text-xs font-semibold text-oren-muted uppercase tracking-wider border-b border-oren-line sticky top-0 z-10">
+              <table className="w-full text-left text-xs text-oren-navy border-collapse">
+                <thead className="bg-[#F4F7F8] text-xs font-semibold text-oren-muted uppercase tracking-wider border-b border-oren-line sticky top-[69px] z-20 shadow-sm">
                   <tr>
-                    <th scope="col" className="px-5 py-3.5">Plant & Location</th>
-                    <th scope="col" className="px-4 py-3.5 text-right">
-                      Scope 1 CO₂
-                      <div className="text-[10px] font-normal lowercase text-oren-muted">
-                        {clinkerAdjusted ? 'clinker-adj (kt)' : 'chimney (kt)'}
+                    <th scope="col" className="px-4 py-3 min-w-[190px]">
+                      Plant & Location
+                    </th>
+                    <th scope="col" className="px-3 py-3 text-right whitespace-nowrap">
+                      Scope 1 (kt)
+                      <div className="text-xs font-normal lowercase text-oren-muted">
+                        {clinkerAdjusted ? 'clinker-adj' : 'chimney'}
                       </div>
                     </th>
-                    <th scope="col" className="px-4 py-3.5 text-right bg-orange-50/40">
+                    <th scope="col" className="px-3 py-3 text-right bg-orange-50/40 whitespace-nowrap">
                       Heat Today
-                      <div className="text-[10px] font-normal lowercase text-oren-teal">api-based (₹ Cr/yr)</div>
+                      <div className="text-xs font-normal lowercase text-oren-teal">api-based</div>
                     </th>
-                    <th scope="col" className="px-4 py-3.5 text-right bg-orange-50/40">
+                    <th scope="col" className="px-3 py-3 text-right bg-orange-50/40 whitespace-nowrap">
                       Heat 2040
-                      <div className="text-[10px] font-normal lowercase text-oren-teal">api-based (₹ Cr/yr)</div>
+                      <div className="text-xs font-normal lowercase text-oren-teal">api-based</div>
                     </th>
-                    <th scope="col" className="px-4 py-3.5 text-right bg-green-50/40">
+                    <th scope="col" className="px-3 py-3 text-right bg-green-50/40 whitespace-nowrap">
                       Water Today
-                      <div className="text-[10px] font-normal lowercase text-oren-amber">assumption (₹ Cr/yr)</div>
+                      <div className="text-xs font-normal lowercase text-oren-amber">assumption</div>
                     </th>
-                    <th scope="col" className="px-4 py-3.5 text-right bg-green-50/40">
+                    <th scope="col" className="px-3 py-3 text-right bg-green-50/40 whitespace-nowrap">
                       Water 2040
-                      <div className="text-[10px] font-normal lowercase text-oren-amber">assumption (₹ Cr/yr)</div>
+                      <div className="text-xs font-normal lowercase text-oren-amber">assumption</div>
                     </th>
-                    <th scope="col" className="px-4 py-3.5 text-right bg-slate-50">
-                      CCTS 2040 (10%)
-                      <div className="text-[10px] font-normal lowercase text-oren-amber">assumption (₹ Cr/yr)</div>
+                    <th scope="col" className="px-3 py-3 text-right bg-slate-100 whitespace-nowrap">
+                      CCTS Notified
+                      <div className="text-xs font-normal lowercase text-oren-amber">2.7% / 6.6%</div>
                     </th>
-                    <th scope="col" className="px-4 py-3.5 text-right bg-slate-50">
-                      CCTS 2040 (3%)
-                      <div className="text-[10px] font-normal lowercase text-oren-amber">assumption (₹ Cr/yr)</div>
+                    <th scope="col" className="px-3 py-3 text-right bg-slate-100 whitespace-nowrap">
+                      CCTS Stretch
+                      <div className="text-xs font-normal lowercase text-oren-amber">10% scenario</div>
                     </th>
-                    <th scope="col" className="px-4 py-3.5 text-right font-bold text-oren-navy">
-                      2040 Total (10%)
-                      <div className="text-[10px] font-normal lowercase text-oren-muted">decoupled sum</div>
+                    <th scope="col" className="px-3 py-3 text-right font-bold text-oren-navy whitespace-nowrap">
+                      2040 Total
+                      <div className="text-xs font-semibold text-oren-amber">includes assumptions</div>
                     </th>
-                    <th scope="col" className="px-4 py-3.5 text-right font-bold text-[#C87445]">
+                    <th scope="col" className="px-3 py-3 text-right font-bold text-[#C87445] whitespace-nowrap">
                       Annual Δ
-                      <div className="text-[10px] font-normal lowercase text-oren-muted">2040 vs today</div>
+                      <div className="text-xs font-normal lowercase text-oren-muted">2040 vs today</div>
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-oren-line text-sm">
+                <tbody className="divide-y divide-oren-line text-xs">
                   {plants.map((plant) => {
                     const scope1 = clinkerAdjusted
                       ? plant.emissions.clinker_reallocated_scope1_kt
@@ -540,13 +652,13 @@ export default function App() {
                     const waterToday = plant.three_component_financial_exposure_inr_cr_per_year.baseline_2015_2024.water_coastal_component_judgement_inr_cr_per_year
                     const water2040 = plant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.water_coastal_component_judgement_inr_cr_per_year
                     
+                    const cctsNotified = clinkerAdjusted
+                      ? plant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.ccts_component_notified_adjusted_inr_cr_per_year
+                      : plant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.ccts_component_notified_unadjusted_inr_cr_per_year
+                    
                     const ccts10 = clinkerAdjusted
                       ? plant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.ccts_component_case_10pct_adjusted_inr_cr_per_year
                       : plant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.ccts_component_case_10pct_unadjusted_inr_cr_per_year
-                    
-                    const ccts3 = clinkerAdjusted
-                      ? plant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.ccts_component_case_3pct_adjusted_inr_cr_per_year
-                      : (plant.emissions.unadjusted_direct_scope1_kt * 1000 * 0.03 * 1500) / 1e7
                     
                     const total2040_10 = heat2040 + water2040 + ccts10
                     const netDelta = total2040_10 - (heatToday + waterToday)
@@ -561,11 +673,11 @@ export default function App() {
                           isSelected ? 'bg-oren-soft font-medium' : ''
                         }`}
                       >
-                        <td className="px-5 py-4">
+                        <td className="px-4 py-3.5">
                           <div className="font-semibold text-oren-navy flex items-center gap-1.5">
                             {plant.plant_name}
                             {plant.plant_type === 'Grinding unit' && (
-                              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-oren-soft text-oren-muted border border-oren-line">
+                              <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-oren-soft text-oren-muted border border-oren-line">
                                 GU
                               </span>
                             )}
@@ -575,39 +687,39 @@ export default function App() {
                           </div>
                         </td>
 
-                        <td className="px-4 py-4 text-right tabular-nums font-medium text-oren-navy">
+                        <td className="px-3 py-3.5 text-right tabular-nums font-medium text-oren-navy">
                           {scope1.toFixed(1)}
                         </td>
 
-                        <td className="px-4 py-4 text-right tabular-nums text-oren-navy bg-orange-50/20">
+                        <td className="px-3 py-3.5 text-right tabular-nums text-oren-navy bg-orange-50/20">
                           ₹{heatToday.toFixed(2)}
                         </td>
 
-                        <td className="px-4 py-4 text-right tabular-nums text-oren-navy font-semibold bg-orange-50/30">
+                        <td className="px-3 py-3.5 text-right tabular-nums text-oren-navy font-semibold bg-orange-50/30">
                           ₹{heat2040.toFixed(2)}
                         </td>
 
-                        <td className="px-4 py-4 text-right tabular-nums text-oren-navy bg-green-50/20">
+                        <td className="px-3 py-3.5 text-right tabular-nums text-oren-navy bg-green-50/20">
                           ₹{waterToday.toFixed(2)}
                         </td>
 
-                        <td className="px-4 py-4 text-right tabular-nums text-oren-navy font-semibold bg-green-50/30">
+                        <td className="px-3 py-3.5 text-right tabular-nums text-oren-navy font-semibold bg-green-50/30">
                           ₹{water2040.toFixed(2)}
                         </td>
 
-                        <td className="px-4 py-4 text-right tabular-nums font-semibold text-oren-navy bg-slate-50/50">
+                        <td className="px-3 py-3.5 text-right tabular-nums font-semibold text-oren-navy bg-slate-50/60">
+                          ₹{cctsNotified.toFixed(2)}
+                        </td>
+
+                        <td className="px-3 py-3.5 text-right tabular-nums text-oren-muted bg-slate-50/60">
                           ₹{ccts10.toFixed(2)}
                         </td>
 
-                        <td className="px-4 py-4 text-right tabular-nums text-oren-muted bg-slate-50/50">
-                          ₹{ccts3.toFixed(2)}
-                        </td>
-
-                        <td className="px-4 py-4 text-right tabular-nums font-bold text-oren-navy">
+                        <td className="px-3 py-3.5 text-right tabular-nums font-bold text-oren-navy">
                           ₹{total2040_10.toFixed(2)}
                         </td>
 
-                        <td className="px-4 py-4 text-right tabular-nums font-bold text-[#C87445]">
+                        <td className="px-3 py-3.5 text-right tabular-nums font-bold text-[#C87445]">
                           +₹{netDelta.toFixed(2)}
                         </td>
                       </tr>
@@ -616,39 +728,39 @@ export default function App() {
                 </tbody>
 
                 {/* Fleet Summary Reconciled Footer */}
-                <tfoot className="bg-oren-surface font-bold text-oren-navy border-t-2 border-oren-line text-sm">
+                <tfoot className="bg-[#F4F7F8] font-bold text-oren-navy border-t-2 border-oren-line text-xs">
                   <tr>
-                    <td className="px-5 py-4">
+                    <td className="px-4 py-3.5">
                       <div>Fleet Total (9 Plants Reconciled)</div>
                       <div className="text-xs font-normal text-oren-muted">
                         Asset base: ₹15,450 Cr · Capacity: 23.00 MTPA
                       </div>
                     </td>
-                    <td className="px-4 py-4 text-right tabular-nums">
-                      10,932.0
+                    <td className="px-3 py-3.5 text-right tabular-nums">
+                      {portfolio_summary.portfolio_totals.total_scope1_co2_kt.toFixed(1)}
                     </td>
-                    <td className="px-4 py-4 text-right tabular-nums bg-orange-50/40">
+                    <td className="px-3 py-3.5 text-right tabular-nums bg-orange-50/40">
                       ₹{baseline.heat_component_api_based_inr_cr_per_year.toFixed(2)}
                     </td>
-                    <td className="px-4 py-4 text-right tabular-nums bg-orange-50/40">
+                    <td className="px-3 py-3.5 text-right tabular-nums bg-orange-50/40">
                       ₹{horizon.heat_component_api_based_inr_cr_per_year.toFixed(2)}
                     </td>
-                    <td className="px-4 py-4 text-right tabular-nums bg-green-50/40">
+                    <td className="px-3 py-3.5 text-right tabular-nums bg-green-50/40">
                       ₹{baseline.water_coastal_component_judgement_inr_cr_per_year.toFixed(2)}
                     </td>
-                    <td className="px-4 py-4 text-right tabular-nums bg-green-50/40">
+                    <td className="px-3 py-3.5 text-right tabular-nums bg-green-50/40">
                       ₹{horizon.water_coastal_component_judgement_inr_cr_per_year.toFixed(2)}
                     </td>
-                    <td className="px-4 py-4 text-right tabular-nums bg-slate-100">
+                    <td className="px-3 py-3.5 text-right tabular-nums bg-slate-100">
+                      ₹{(clinkerAdjusted ? horizon.ccts_component_notified_annual_adjusted_inr_cr_per_year : horizon.ccts_component_notified_annual_direct_inr_cr_per_year).toFixed(2)}
+                    </td>
+                    <td className="px-3 py-3.5 text-right tabular-nums bg-slate-100">
                       ₹{horizon.ccts_component_case_10pct_annual_inr_cr_per_year.toFixed(2)}
                     </td>
-                    <td className="px-4 py-4 text-right tabular-nums bg-slate-100">
-                      ₹{horizon.ccts_component_case_3pct_annual_inr_cr_per_year.toFixed(2)}
-                    </td>
-                    <td className="px-4 py-4 text-right tabular-nums text-oren-navy">
+                    <td className="px-3 py-3.5 text-right tabular-nums text-oren-navy">
                       ₹{horizon.component_sum_with_10pct_ccts_inr_cr_per_year.toFixed(2)}
                     </td>
-                    <td className="px-4 py-4 text-right tabular-nums text-[#C87445]">
+                    <td className="px-3 py-3.5 text-right tabular-nums text-[#C87445]">
                       +₹{attribution.delta_total_10pct_inr_cr_per_year.toFixed(2)}
                     </td>
                   </tr>
@@ -664,20 +776,20 @@ export default function App() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-oren-line pb-4">
               <div>
                 <h3 className="text-xl font-display font-bold text-oren-navy">
-                  Assumptions & Audit Registry (SEBI BRSR Compliance)
+                  Assumptions & Methodology Registry
                 </h3>
                 <p className="text-xs text-oren-muted mt-1">
                   Every parameter, empirical data source, and expert judgement entry is registered here with its audit status.
                 </p>
               </div>
               <span className="text-xs font-semibold px-3 py-1 rounded-full bg-oren-soft text-oren-navy border border-oren-line">
-                v4.0 Final Audited
+                Audited Parameters
               </span>
             </div>
 
             {/* General & Financial Assumptions Table */}
             <div className="space-y-3">
-              <h4 className="text-sm font-display font-bold text-oren-navy uppercase tracking-wider">
+              <h4 className="text-xs font-display font-bold text-oren-navy uppercase tracking-wider">
                 Financial, Operational & Regulatory Parameters
               </h4>
               <div className="overflow-x-auto rounded-xl border border-oren-line">
@@ -699,7 +811,7 @@ export default function App() {
                         <td className="px-4 py-3 text-oren-muted">{param.unit}</td>
                         <td className="px-4 py-3">
                           <span
-                            className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${
+                            className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
                               (param.status || '').includes('API') || (param.status || '').includes('historical') || (param.status || '').includes('Model')
                                 ? 'bg-teal-50 text-oren-teal border border-oren-teal/20'
                                 : 'bg-oren-amberBg text-oren-amber border border-oren-amber/40 border-dashed'
@@ -719,7 +831,7 @@ export default function App() {
             {/* Site-Level Water & Coastal Judgement Entries */}
             <div className="space-y-3 pt-4">
               <div className="flex items-center justify-between">
-                <h4 className="text-sm font-display font-bold text-oren-navy uppercase tracking-wider">
+                <h4 className="text-xs font-display font-bold text-oren-navy uppercase tracking-wider">
                   Site-Level Physical Water & Coastal Days
                 </h4>
                 <span className="text-xs text-oren-amber font-semibold bg-oren-amberBg px-2.5 py-0.5 rounded-full border border-oren-amber/40 border-dashed">
@@ -727,7 +839,7 @@ export default function App() {
                 </span>
               </div>
               <p className="text-xs text-oren-muted">
-                Per user audit directive, all basin water stress scores, basin names, and downtime days are documented as expert judgement without unverified external agency claims.
+                Expert judgement documentation: all basin water stress scores, basin names, and downtime days are documented as expert judgement without unverified external agency claims.
               </p>
               <div className="overflow-x-auto rounded-xl border border-oren-line">
                 <table className="w-full text-left text-xs text-oren-navy">
@@ -758,7 +870,7 @@ export default function App() {
                           <td className="px-4 py-3 text-right tabular-nums">{w.coastal_lost_days_baseline.toFixed(1)} d</td>
                           <td className="px-4 py-3 text-right tabular-nums font-bold text-oren-navy">{w.coastal_lost_days_2040.toFixed(1)} d</td>
                           <td className="px-4 py-3">
-                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-oren-amberBg text-oren-amber border border-oren-amber/40 border-dashed">
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-oren-amberBg text-oren-amber border border-oren-amber/40 border-dashed">
                               {w.source_status}
                             </span>
                           </td>
@@ -811,33 +923,48 @@ export default function App() {
                 </button>
               </div>
 
-              {/* Three Plain English Bullets */}
+              {/* Exactly Three Short Crisp Bullets (Following Toggle, No 'inland kiln' for GUs) */}
               <div className="space-y-3">
-                <h4 className="text-xs font-semibold text-oren-muted uppercase tracking-wider">
-                  Executive Briefing & Diagnosis
-                </h4>
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-semibold text-oren-muted uppercase tracking-wider">
+                    Executive Briefing & Diagnosis
+                  </h4>
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-oren-soft text-oren-navy">
+                    {clinkerAdjusted ? 'Clinker-adjusted view' : 'Direct chimney view'}
+                  </span>
+                </div>
                 <div className="space-y-2.5 text-xs sm:text-sm text-oren-navy leading-relaxed bg-oren-surface p-4 rounded-xl border border-oren-line">
-                  <div className="flex items-start gap-2.5">
-                    <span className="h-2 w-2 rounded-full bg-chart-heat mt-1.5 flex-shrink-0" />
-                    <div>
-                      <strong className="font-semibold">Heat Stress & Quarry Hazards: </strong>
-                      Experiences {selectedPlant.physical_climate_data_bias_aware.days_above_40c_baseline.toFixed(1)} days/yr ≥40°C today (ERA5 reanalysis), projected to {selectedPlant.physical_climate_data_bias_aware.days_above_40c_2040.toFixed(1)} days/yr in 2040 ({selectedPlant.physical_climate_data_bias_aware.days_above_40c_trend_note}). Heat downtime financial impact grows to ₹{selectedPlant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.heat_component_api_based_inr_cr_per_year.toFixed(2)} Cr/yr.
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2.5">
-                    <span className="h-2 w-2 rounded-full bg-chart-water mt-1.5 flex-shrink-0" />
-                    <div>
-                      <strong className="font-semibold">Water Source Curtailment: </strong>
-                      Relies on {selectedPlant.water_source.toLowerCase()} in {selectedPlant.physical_climate_data_bias_aware.water_and_coastal_assessment.basin_name}. Projected to face {selectedPlant.physical_climate_data_bias_aware.water_and_coastal_assessment.water_lost_days_2040.toFixed(1)} water-lost days/yr in 2040 ({selectedPlant.coastal === 'Y' ? `plus ${selectedPlant.physical_climate_data_bias_aware.water_and_coastal_assessment.coastal_lost_days_2040.toFixed(1)} coastal shutdown days` : 'inland kiln'}), generating ₹{selectedPlant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.water_coastal_component_judgement_inr_cr_per_year.toFixed(2)} Cr/yr in operating margin curtailment (assumption).
-                    </div>
-                  </div>
-
+                  {/* Bullet 1: Operations & Emissions (Following Toggle) */}
                   <div className="flex items-start gap-2.5">
                     <span className="h-2 w-2 rounded-full bg-oren-navy mt-1.5 flex-shrink-0" />
                     <div>
-                      <strong className="font-semibold">CCTS Regulatory Compliance: </strong>
-                      Emits {selectedPlant.emissions.unadjusted_direct_scope1_kt.toFixed(0)} kt direct Scope 1 CO₂ ({selectedPlant.emissions.clinker_reallocated_scope1_kt.toFixed(0)} kt clinker-adjusted). Under a 10% emission intensity reduction target @ ₹1,500/tCO₂, annual carbon liability is projected at ₹{selectedPlant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.ccts_component_case_10pct_adjusted_inr_cr_per_year.toFixed(2)} Cr/yr (or ₹{selectedPlant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.ccts_component_case_3pct_adjusted_inr_cr_per_year.toFixed(2)} Cr/yr at 3% cut).
+                      <strong className="font-semibold">Operations & Scope 1: </strong>
+                      {selectedPlant.plant_type === 'Grinding unit'
+                        ? clinkerAdjusted
+                          ? `Grinding unit producing ${selectedPlant.cement_output_fy2025_26_mt.toFixed(2)} Mt cement. Under clinker accounting, incorporates transferred intermediate clinker emissions for an adjusted total of ${selectedPlant.emissions.clinker_reallocated_scope1_kt.toFixed(0)} kt CO₂.`
+                          : `Grinding unit producing ${selectedPlant.cement_output_fy2025_26_mt.toFixed(2)} Mt cement with low direct chimney smoke (${selectedPlant.emissions.unadjusted_direct_scope1_kt.toFixed(0)} kt CO₂) because clinker is calcined off-site.`
+                        : clinkerAdjusted
+                          ? `Integrated manufacturing kiln producing ${selectedPlant.cement_output_fy2025_26_mt.toFixed(2)} Mt cement. Adjusting for ${selectedPlant.clinker_shipped_fy2025_26_mt.toFixed(2)} Mt clinker shipped off-site by rail brings net on-site emissions to ${selectedPlant.emissions.clinker_reallocated_scope1_kt.toFixed(0)} kt CO₂.`
+                          : `Integrated manufacturing kiln producing ${selectedPlant.cement_output_fy2025_26_mt.toFixed(2)} Mt cement, generating ${selectedPlant.emissions.unadjusted_direct_scope1_kt.toFixed(0)} kt direct chimney Scope 1 CO₂.`
+                      }
+                    </div>
+                  </div>
+
+                  {/* Bullet 2: Physical Hazards (No 'inland kiln' for grinding units) */}
+                  <div className="flex items-start gap-2.5">
+                    <span className="h-2 w-2 rounded-full bg-chart-heat mt-1.5 flex-shrink-0" />
+                    <div>
+                      <strong className="font-semibold">Physical Climate Hazards: </strong>
+                      Experiences {selectedPlant.physical_climate_data_bias_aware.days_above_40c_baseline.toFixed(1)} days/yr ≥40°C today (ERA5 reanalysis), reaching {selectedPlant.physical_climate_data_bias_aware.days_above_40c_2040.toFixed(1)} days/yr in 2040 (₹{selectedPlant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.heat_component_api_based_inr_cr_per_year.toFixed(2)} Cr/yr heat risk). Water supply from {selectedPlant.water_source.toLowerCase()} in {selectedPlant.physical_climate_data_bias_aware.water_and_coastal_assessment.basin_name} entails ₹{selectedPlant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.water_coastal_component_judgement_inr_cr_per_year.toFixed(2)} Cr/yr in curtailment exposure ({selectedPlant.coastal === 'Y' ? `${selectedPlant.physical_climate_data_bias_aware.water_and_coastal_assessment.coastal_lost_days_2040.toFixed(1)} coastal cyclone shutdown days` : selectedPlant.plant_type === 'Grinding unit' ? 'inland grinding facility' : 'inland kiln facility'}).
+                    </div>
+                  </div>
+
+                  {/* Bullet 3: Transition Risk & CCTS Scenarios */}
+                  <div className="flex items-start gap-2.5">
+                    <span className="h-2 w-2 rounded-full bg-chart-water mt-1.5 flex-shrink-0" />
+                    <div>
+                      <strong className="font-semibold">Regulatory Transition: </strong>
+                      CCTS baseline penalty today is not computable from CSV. Under notified rates ({selectedPlant.plant_type === 'Integrated' ? '2.7%' : '6.6%'}), liability is ₹{(clinkerAdjusted ? selectedPlant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.ccts_component_notified_adjusted_inr_cr_per_year : selectedPlant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.ccts_component_notified_unadjusted_inr_cr_per_year).toFixed(2)} Cr/yr, rising to ₹{(clinkerAdjusted ? selectedPlant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.ccts_component_case_10pct_adjusted_inr_cr_per_year : selectedPlant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.ccts_component_case_10pct_unadjusted_inr_cr_per_year).toFixed(2)} Cr/yr under the stretch 10% scenario.
                     </div>
                   </div>
                 </div>
@@ -912,16 +1039,14 @@ export default function App() {
         </div>
       )}
 
-      {/* Footer */}
+      {/* Footer (Unified Product Name) */}
       <footer className="border-t border-oren-line bg-oren-surface py-6 text-xs text-oren-muted mt-12">
         <div className="max-w-[1200px] mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <strong>Nimbus Climate Exposure Decision Ledger</strong> · Designed for Board, SEBI BRSR Core & Institutional Due Diligence.
+            <strong>Nimbus Climate Exposure Ledger</strong> · Designed for Board & Institutional Decision Support.
           </div>
           <div className="flex items-center gap-4">
             <span>Deterministic JSON Data Contract</span>
-            <span>·</span>
-            <span>Zero Client-Side Simulation</span>
           </div>
         </div>
       </footer>

@@ -1,15 +1,15 @@
-# Engineering Specification & Developer Ticket: Nimbus ClimateIQ v1
+# Engineering Specification & Developer Ticket: Nimbus Climate Exposure Ledger
 
 **Ticket ID:** CLIM-101  
 **Title:** Standalone Climate Exposure & Transition Risk Ledger (Nimbus Cement Ltd)  
 **Priority:** P1 (Executive MVP)  
 **Target User:** Meera Iyer (Head of Sustainability) presenting to Board & Auditors  
-**Runtime & Deployment:** React 18 / Next.js / Vite + Tailwind CSS (Static / Edge compatible, zero auth)  
+**Runtime & Deployment:** React 18 / Vite + Tailwind CSS (Static / Edge compatible, zero auth)  
 
 ---
 
 ## 1. Problem Context & Goal
-Nimbus Cement Ltd operates 9 manufacturing plants across India representing ₹15,450 Cr in gross block and 10,932 kt of direct Scope 1 CO₂. Executive leadership, SEBI BRSR compliance auditors, and lenders need a transparent ledger detailing business exposure today (empirical baseline) versus 2040. 
+Nimbus Cement Ltd operates 9 manufacturing plants across India representing ₹15,450 Cr in gross block and 10,932 kt of direct Scope 1 CO₂. Executive leadership, statutory auditors, and lenders need a transparent ledger detailing business exposure today (empirical baseline) versus 2040. 
 
 The application must decouple financial risk into three explicit components (**Heat**, **Water+Coastal**, **CCTS Regulatory**), support clinker supply-chain reallocation, enforce strict single-path reconciliation, and require zero client-side simulation.
 
@@ -64,12 +64,12 @@ All summary figures must equal the exact sum of plant rows: $\text{Fleet Total} 
 - $\text{Water+Coastal Exposure (₹ Cr/year)} = (\text{Water Lost Days} + \text{Coastal Lost Days}) \times \text{Daily EBITDA}$.
 - *Caveat:* Open-Meteo Flood API (river discharge m³/s) is contextual background only; does NOT feed money calculation.
 
-### 3.4 CCTS Regulatory Transition Liability (Label: "assumption", "illustrative")
+### 3.4 CCTS Regulatory Transition Liability (Label: "assumption", "scenario")
 - Formula: $\text{Liability (₹ Cr/year)} = (\text{Scope 1 (kt)} \times 1000 \times \text{cut\_pct} \times \text{Carbon Price}) / 10^7$.
 - Carbon Price $= \text{₹}1,500 / \text{tCO}_2$ (assumption).
-- Baseline (2015–2024): ₹0.00 Cr/yr (labelled `"unverified assumption (pending regulatory compliance schedule)"`).
-- Evaluated side by side: **Case A (3% Cut)** and **Case B (10% Cut)**.
-- Fleet total invariant: ₹49.19 Cr/yr (3%) and ₹163.99 Cr/yr (10%) under both unadjusted and adjusted views.
+- Baseline (2015–2024): Not computable from CSV (no FY2023-24 baseline available). Upper bound at notified averages (integrated 2.7%, grinding 6.6%) is ₹44.73 Cr/yr (direct) / ₹56.84 Cr/yr (clinker-adjusted).
+- 2040 Horizon: Evaluated as illustrative compliance scenarios side by side: **Notified Rates** (integrated 2.7%, grinding 6.6%) and **Stretch 10% (scenario)** (₹163.99 Cr/yr fleet).
+- Regulatory note: No gazetted BEE reduction target runs to 2040.
 
 ---
 

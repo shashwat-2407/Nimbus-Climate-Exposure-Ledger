@@ -1,8 +1,8 @@
-# Product Process Note: Building Nimbus ClimateIQ v1
+# Product Process Note: Building Nimbus Climate Exposure Ledger
 
 **Author:** Shashwat Sengupta (Acting Product Manager)  
 **Customer Persona:** Meera Iyer, Head of Sustainability, Nimbus Cement Ltd  
-**Context:** Board Briefing, SEBI BRSR Core Audit, Lender Due Diligence  
+**Context:** Board Briefing, Statutory Audit Review, Lender Due Diligence  
 
 ---
 
@@ -18,12 +18,12 @@ Meera was trapped between two disconnected silos: an internal 9-plant operationa
 
 ## 2. Key Assumptions & Labelled Provenance
 
-To satisfy SEBI BRSR auditability and avoid "made-up numbers", every assumption is documented in [`assumptions.json`](./assumptions.json):
+To ensure rigorous auditability and avoid "made-up numbers", every assumption is documented in [`assumptions.json`](./assumptions.json):
 - **Nominal Operating Days:** 330 days/year (35 days statutory shutdown/refractory relining). *Source status: Industry benchmark assumption.*
 - **EBITDA Margin:** ₹1,000 / tonne cement (~19% margin on ₹5,263/t realization, median of UltraTech, Shree, and Ambuja over FY23–FY25). *Source status: Assumption.*
 - **Carbon Price:** ₹1,500 / tCO₂ (~$18.00/t). *Source status: Assumption pending exchange price discovery.*
-- **CCTS Regulatory Trajectory:** Evaluated side by side at **3% cut** (lower bound, ₹49.19 Cr/yr fleet) and **10% cut** (headline, ₹163.99 Cr/yr fleet). *Source status: Illustrative assumption.*
-- **Water & Coastal Curtailment:** Site-specific basin downtime days (1.5 to 16.0 days/year). *Source status: "judgement, not sourced" (no unverified claims like CGWB cited).*
+- **CCTS Regulatory Trajectory:** Today baseline is not computable from CSV (no FY2023-24 baseline available). Upper bound at notified averages is ₹44.73 Cr/yr (direct) or ₹56.84 Cr/yr (clinker-adjusted). 2040 horizon is evaluated at **notified rates** (integrated 2.7%, grinding 6.6%) and **stretch 10% (scenario)** (₹163.99 Cr/yr fleet). Explicitly noted that no gazetted target runs to 2040.
+- **Water & Coastal Curtailment:** Site-specific basin downtime days (1.5 to 16.0 days/year). *Source status: "judgement, not sourced" (no unverified claims cited).*
 - **Flood Discharge Data:** Open-Meteo Flood API river discharge (m³/s) is reported as hydrological context only and explicitly does NOT feed the financial loss formula.
 
 ---
@@ -33,7 +33,7 @@ To satisfy SEBI BRSR auditability and avoid "made-up numbers", every assumption 
 1. **Cut: Heavy GIS Satellite Maps:**
    - *Why:* Meera’s Board presentation is 20 minutes long. Directors need an actionable risk ledger ranked by financial exposure, not interactive Google Earth weather layers that take 10 seconds to load.
 2. **Cut: User Authentication & Login Walls:**
-   - *Why:* Designed for frictionless board circulation and rapid assessment evaluation. Opens instantly on Vercel without credentials.
+   - *Why:* Designed for frictionless board circulation and rapid executive evaluation without authentication friction.
 3. **Cut: Scope 3 Downstream Delivery Road Transport:**
    - *Why:* Tracking thousands of third-party dealer trucks introduces high data uncertainty and blurs kiln asset-level accountability. V1 strictly evaluates the 9 factory fencelines and internal rail transfers.
 4. **Cut: Client-Side NetCDF / Raw Scientific Processing:**

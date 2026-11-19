@@ -104,7 +104,10 @@ def run_audit():
     sum_water_2040 = sum(p["three_component_financial_exposure_inr_cr_per_year"]["horizon_2040"]["water_coastal_component_judgement_inr_cr_per_year"] for p in json_plants)
     sum_ccts_10_unadj = sum(p["three_component_financial_exposure_inr_cr_per_year"]["horizon_2040"]["ccts_component_case_10pct_unadjusted_inr_cr_per_year"] for p in json_plants)
     sum_ccts_10_adj = sum(p["three_component_financial_exposure_inr_cr_per_year"]["horizon_2040"]["ccts_component_case_10pct_adjusted_inr_cr_per_year"] for p in json_plants)
+    sum_ccts_3_unadj = sum(p["three_component_financial_exposure_inr_cr_per_year"]["horizon_2040"]["ccts_component_case_3pct_unadjusted_inr_cr_per_year"] for p in json_plants)
     sum_ccts_3_adj = sum(p["three_component_financial_exposure_inr_cr_per_year"]["horizon_2040"]["ccts_component_case_3pct_adjusted_inr_cr_per_year"] for p in json_plants)
+    sum_ccts_notified_unadj = sum(p["three_component_financial_exposure_inr_cr_per_year"]["horizon_2040"]["ccts_component_notified_unadjusted_inr_cr_per_year"] for p in json_plants)
+    sum_ccts_notified_adj = sum(p["three_component_financial_exposure_inr_cr_per_year"]["horizon_2040"]["ccts_component_notified_adjusted_inr_cr_per_year"] for p in json_plants)
 
     headline = json_summary["headline_exposure_summary_inr_cr_per_year"]
     
@@ -126,8 +129,19 @@ def run_audit():
     print(f"  • CCTS 10% Clinker-Adjusted:  ₹{sum_ccts_10_adj:.2f} Cr/yr == ₹163.99 Cr/yr (Strict Invariance)")
     assert math.isclose(sum_ccts_10_adj, 163.99, abs_tol=1e-2)
 
+    print(f"  • CCTS 3% Unadjusted:         ₹{sum_ccts_3_unadj:.2f} Cr/yr == ₹49.19 Cr/yr")
+    assert math.isclose(sum_ccts_3_unadj, 49.19, abs_tol=1e-2)
+
     print(f"  • CCTS 3% Clinker-Adjusted:   ₹{sum_ccts_3_adj:.2f} Cr/yr == ₹49.19 Cr/yr (Strict Invariance)")
     assert math.isclose(sum_ccts_3_adj, 49.19, abs_tol=1e-2)
+
+    print(f"  • CCTS Notified Unadjusted:   ₹{sum_ccts_notified_unadj:.2f} Cr/yr (integrated 2.7%, grinding 6.6%)")
+    assert math.isclose(sum_ccts_notified_unadj, 44.74, abs_tol=0.05)
+
+    print(f"  • CCTS Notified Adjusted:     ₹{sum_ccts_notified_adj:.2f} Cr/yr")
+    assert math.isclose(sum_ccts_notified_adj, 56.84, abs_tol=0.05)
+
+    assert headline["baseline_2015_2024"]["ccts_status"] == "not computable from CSV (no FY2023-24 baseline)"
 
     print("\n" + "=" * 70)
     print("ALL AUDIT ASSERTIONS COMPLETED SUCCESSFULLY WITH ZERO ERRORS!")
