@@ -3,26 +3,44 @@
 @tailwind utilities;
 
 :root {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  color-scheme: dark;
+  font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: light;
 }
 
-code, kbd, samp, pre {
-  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+/* Tabular figures for numbers */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }
 
-/* Custom scrollbar */
+/* Headings font */
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: 'Figtree', 'Lato', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Custom light scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #F4F7F8;
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 3px;
+  background: #D5DDE0;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #4B5578;
+}
+
+/* Diagonal hatch pattern for assumption styling */
+.bg-hatch-assumption {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 6px,
+    rgba(161, 98, 7, 0.05) 6px,
+    rgba(161, 98, 7, 0.05) 12px
+  );
 }
