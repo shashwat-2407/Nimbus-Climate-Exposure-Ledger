@@ -26,6 +26,8 @@ import {
   BarChart3
 } from 'lucide-react'
 
+type SortKey = 'plant' | 'scope1' | 'intensity' | 'heatToday' | 'heat2040' | 'waterToday' | 'water2040' | 'cctsNotified' | 'ccts10' | 'total2040' | 'delta'
+
 export default function App() {
   const searchParams = typeof window !== 'undefined' 
     ? new URLSearchParams(window.location.search || window.location.hash.replace(/^#\??/, '')) 
@@ -43,6 +45,9 @@ export default function App() {
 
   const selectedPlant = plants.find(p => p.plant_id === selectedPlantId) || null
   const assumptionsRef = useRef<HTMLElement | null>(null)
+  const [sort, setSort] = useState<{ key: SortKey; dir: 'asc' | 'desc' }>({ key: 'total2040', dir: 'desc' })
+  const toggleSort = (key: SortKey) =>
+    setSort(prev => (prev.key === key ? { key, dir: prev.dir === 'desc' ? 'asc' : 'desc' } : { key, dir: key === 'plant' ? 'asc' : 'desc' }))
 
   // CCTS is always computed on direct (unadjusted) emissions. The clinker toggle
   // never feeds a ₹ value; it only changes the Scope 1 and intensity columns.
@@ -60,6 +65,35 @@ export default function App() {
   const pctHeat = (deltaHeat / deltaTotal) * 100
   const pctWater = (deltaWater / deltaTotal) * 100
   const pctCcts = (deltaCcts / deltaTotal) * 100
+
+  const rows = plants.map(plant => {
+    const fin = plant.three_component_financial_exposure_inr_cr_per_year
+    const heatToday = fin.baseline_2015_2024.heat_component_api_based_inr_cr_per_year
+    const heat2040 = fin.horizon_2040.heat_component_api_based_inr_cr_per_year
+    const waterToday = fin.baseline_2015_2024.water_coastal_component_judgement_inr_cr_per_year
+    const water2040 = fin.horizon_2040.water_coastal_component_judgement_inr_cr_per_year
+    const cctsTodayUB = fin.baseline_2015_2024.ccts_today_upper_bound_inr_cr_per_year
+    // Direct emissions only, regardless of the clinker toggle.
+    const cctsNotified = fin.horizon_2040.ccts_component_notified_unadjusted_inr_cr_per_year
+    const ccts10Plant = fin.horizon_2040.ccts_component_case_10pct_unadjusted_inr_cr_per_year
+    const total2040 = heat2040 + water2040 + ccts10Plant
+    return {
+      plant,
+      plant_name: plant.plant_name,
+      scope1: clinkerAdjusted ? plant.emissions.clinker_reallocated_scope1_kt : plant.emissions.unadjusted_direct_scope1_kt,
+      intensity: clinkerAdjusted ? plant.emissions.adjusted_intensity_tco2_per_t : plant.emissions.unadjusted_intensity_tco2_per_t,
+      heatToday, heat2040, waterToday, water2040, cctsNotified,
+      ccts10: ccts10Plant,
+      total2040,
+      delta: total2040 - (heatToday + waterToday + cctsTodayUB),
+    }
+  })
+  const sortedRows = [...rows].sort((a, b) => {
+    const av = sort.key === 'plant' ? a.plant_name : a[sort.key]
+    const bv = sort.key === 'plant' ? b.plant_name : b[sort.key]
+    const c = typeof av === 'string' ? av.localeCompare(bv as string) : (av as number) - (bv as number)
+    return sort.dir === 'asc' ? c : -c
+  })
 
   const toggleAssumptions = () => {
     const next = !assumptionsOpen
@@ -122,10 +156,10 @@ export default function App() {
     },
     {
       parameter: 'CCTS Reduction Rates',
-      value: 'Notified averages (integrated 2.7%, grinding 6.6%) vs Stretch 10% (scenario)',
+      value: 'Illustrative rates (integrated 2.7%, grinding 6.6%) vs Stretch 10% (scenario)',
       unit: 'mandated GEI cut',
       status: 'Illustrative Scenario',
-      justification: 'Evaluates official notified rates against a 10% stretch scenario. No gazetted target runs to 2040.'
+      justification: 'The 2.7% / 6.6% split is illustrative and not verified against the notified rules. ICAP reports the notified cement range as 4.7%–7.6% for FY2025-26 to FY2026-27, set per plant against an FY2023-24 baseline. No gazetted target runs to 2040.'
     }
   ]
 
@@ -143,12 +177,9 @@ export default function App() {
                 <span className="font-display font-bold text-base sm:text-lg text-oren-navy tracking-tight">
                   Nimbus Climate Exposure Ledger
                 </span>
-                <span className="hidden sm:inline-block text-xs px-2.5 py-0.5 rounded-full bg-oren-soft text-oren-navy font-medium">
-                  Meera Iyer · Head of Sustainability
-                </span>
               </div>
               <p className="hidden sm:block text-xs text-oren-muted">
-                Executive Decision Ledger · Physical Climate & Regulatory Transition Intelligence
+                Climate exposure today and by 2040 · Heat, water and coastal, and CCTS carbon cost
               </p>
             </div>
           </div>
@@ -199,6 +230,9 @@ export default function App() {
               </div>
               <p className="text-xs text-oren-muted mt-0.5">
                 Annual financial exposure in ₹ Crores / year comparing empirical baseline against 2040 projections.
+              </p>
+              <p className="text-xs text-oren-muted">
+                Data as of: Open-Meteo ERA5 reanalysis 2015–2024 and CMIP6 HighResMIP (EC_Earth3P_HR, MRI_AGCM3_2_S), 2036–2045 window, snapshot cached in this build. Plant data: FY2025-26 CSV.
               </p>
             </div>
 
@@ -251,13 +285,13 @@ export default function App() {
                 <div
                   style={{ width: `${(cctsTodayUpperBound / 250) * 100}%` }}
                   className="bg-hatch-ccts h-full flex items-center justify-center text-xs font-bold text-oren-navy px-2 border-l border-dashed border-oren-navy"
-                  title={`CCTS today, upper bound at notified rates: up to ₹${cctsTodayUpperBound.toFixed(2)} Cr/yr (direct emissions)`}
+                  title={`CCTS today, upper bound at illustrative rates: up to ₹${cctsTodayUpperBound.toFixed(2)} Cr/yr (direct emissions)`}
                 >
                   <span className="bg-white/85 rounded px-1">≤ ₹{cctsTodayUpperBound.toFixed(2)}</span>
                 </div>
               </div>
               <p className="text-xs text-oren-muted">
-                Hatched segment: CCTS today, upper bound at notified rates (integrated 2.7%, grinding 6.6%) on direct emissions. It is not part of the ₹{chartData.today.total_inr_cr_per_year.toFixed(2)} Cr / yr total, because no FY2023-24 baseline exists in the CSV.
+                Hatched segment: CCTS today, upper bound at illustrative rates (integrated 2.7%, grinding 6.6%, not verified against the notified rules) on direct emissions. It is not part of the ₹{chartData.today.total_inr_cr_per_year.toFixed(2)} Cr / yr total, because no FY2023-24 baseline exists in the CSV.
               </p>
             </div>
 
@@ -266,9 +300,6 @@ export default function App() {
               <div className="flex items-center justify-between text-xs font-semibold text-oren-navy">
                 <span className="flex items-center gap-2">
                   <span>2040 Horizon (with Stretch 10% Scenario)</span>
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-oren-amberBg text-oren-amber border border-oren-amber/40 border-dashed">
-                    includes assumptions
-                  </span>
                 </span>
                 <span className="tabular-nums font-bold text-oren-navy">
                   ₹{chartData.horizon_2040_stretch_10pct.total_inr_cr_per_year.toFixed(2)} Cr / yr
@@ -299,14 +330,11 @@ export default function App() {
               </div>
             </div>
 
-            {/* Row 3: 2040 Horizon (Notified Rates Case) */}
+            {/* Row 3: 2040 Horizon (Illustrative Rates Case) */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-xs font-semibold text-oren-navy">
                 <span className="flex items-center gap-2">
-                  <span>2040 Horizon (with Notified Rates: Integrated 2.7%, Grinding 6.6%)</span>
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-oren-amberBg text-oren-amber border border-oren-amber/40 border-dashed">
-                    includes assumptions
-                  </span>
+                  <span>2040 Horizon (with Illustrative Rates: Integrated 2.7%, Grinding 6.6%)</span>
                 </span>
                 <span className="tabular-nums font-bold text-oren-navy">
                   ₹{total2040Notified.toFixed(2)} Cr / yr
@@ -330,7 +358,7 @@ export default function App() {
                 <div
                   style={{ width: `${(cctsNotified2040 / 250) * 100}%` }}
                   className="bg-[#1E2B56] h-full flex items-center justify-center text-xs font-bold text-white px-2 opacity-90"
-                  title={`CCTS Notified: ₹${cctsNotified2040.toFixed(2)} Cr/yr (direct emissions)`}
+                  title={`CCTS Illustrative: ₹${cctsNotified2040.toFixed(2)} Cr/yr (direct emissions)`}
                 >
                   ₹{cctsNotified2040.toFixed(2)}
                 </div>
@@ -461,7 +489,7 @@ export default function App() {
                 </div>
 
                 <div className="text-right">
-                  <div className="text-xs text-oren-muted mb-0.5">Notified rates (2.7% / 6.6%)</div>
+                  <div className="text-xs text-oren-muted mb-0.5">Illustrative rates (2.7% / 6.6%)</div>
                   <div className="flex items-baseline justify-end gap-1.5">
                     <span className="text-2xl font-display font-bold text-oren-navy tabular-nums">
                       ₹{cctsNotified2040.toFixed(2)}
@@ -476,7 +504,7 @@ export default function App() {
                   Today: no FY2023-24 baseline in CSV, so shown as an upper bound only
                 </div>
                 <div className="text-oren-muted">
-                  Upper bound at notified averages: ₹{cctsTodayUpperBound.toFixed(2)} Cr/yr (direct emissions)
+                  Upper bound at illustrative rates: ₹{cctsTodayUpperBound.toFixed(2)} Cr/yr (direct emissions)
                 </div>
               </div>
             </div>
@@ -496,7 +524,7 @@ export default function App() {
                 </span>
               </div>
               <p className="text-sm text-oren-navy leading-relaxed font-normal">
-                Heat (+₹{deltaHeat.toFixed(2)} Cr/yr) and water & coastal (+₹{deltaWater.toFixed(2)} Cr/yr) are measured against today's baseline. CCTS has no baseline in the CSV, so its increase is a floor: ₹{ccts10.toFixed(2)} Cr/yr in 2040 minus the ₹{cctsTodayUpperBound.toFixed(2)} Cr/yr upper bound today, which is at least +₹{deltaCcts.toFixed(2)} Cr/yr. At notified rates the CCTS increase is ₹0.00, because the same emissions and rates apply today and in 2040. All CCTS figures use direct emissions.
+                Heat (+₹{deltaHeat.toFixed(2)} Cr/yr) and water & coastal (+₹{deltaWater.toFixed(2)} Cr/yr) are measured against today's baseline. CCTS has no baseline in the CSV, so its increase is a floor: ₹{ccts10.toFixed(2)} Cr/yr in 2040 minus the ₹{cctsTodayUpperBound.toFixed(2)} Cr/yr upper bound today, which is at least +₹{deltaCcts.toFixed(2)} Cr/yr. At illustrative rates the CCTS increase is ₹0.00, because the same emissions and rates apply today and in 2040. All CCTS figures use direct emissions.
               </p>
             </div>
 
@@ -624,78 +652,48 @@ export default function App() {
             <table className="w-full text-left text-xs text-oren-navy border-collapse">
               <thead className="bg-[#F4F7F8] text-xs font-semibold text-oren-muted uppercase tracking-wider border-b border-oren-line">
                 <tr>
-                  <th scope="col" className="px-4 py-3 min-w-[190px]">
-                    Plant & Location
-                  </th>
-                  <th scope="col" className="px-3 py-3 text-right whitespace-nowrap">
-                    Scope 1 (kt)
-                    <div className="text-xs font-normal lowercase text-oren-muted">
-                      {clinkerAdjusted ? 'clinker-adjusted' : 'direct chimney'}
-                    </div>
-                  </th>
-                  <th scope="col" className="px-3 py-3 text-right whitespace-nowrap">
-                    Intensity
-                    <div className="text-xs font-normal normal-case text-oren-muted">
-                      tCO₂ / t cement · {clinkerAdjusted ? 'adjusted' : 'direct'}
-                    </div>
-                  </th>
-                  <th scope="col" className="px-3 py-3 text-right bg-orange-50/40 whitespace-nowrap">
-                    Heat Today
-                    <div className="text-xs font-normal lowercase text-oren-teal">api-based</div>
-                  </th>
-                  <th scope="col" className="px-3 py-3 text-right bg-orange-50/40 whitespace-nowrap">
-                    Heat 2040
-                    <div className="text-xs font-normal lowercase text-oren-teal">api-based</div>
-                  </th>
-                  <th scope="col" className="px-3 py-3 text-right bg-green-50/40 whitespace-nowrap">
-                    Water Today
-                    <div className="text-xs font-normal lowercase text-oren-amber">assumption</div>
-                  </th>
-                  <th scope="col" className="px-3 py-3 text-right bg-green-50/40 whitespace-nowrap">
-                    Water 2040
-                    <div className="text-xs font-normal lowercase text-oren-amber">assumption</div>
-                  </th>
-                  <th scope="col" className="px-3 py-3 text-right bg-slate-100 whitespace-nowrap">
-                    CCTS Notified
-                    <div className="text-xs font-normal lowercase text-oren-amber">2.7% / 6.6% · direct</div>
-                  </th>
-                  <th scope="col" className="px-3 py-3 text-right bg-slate-100 whitespace-nowrap">
-                    CCTS Stretch
-                    <div className="text-xs font-normal lowercase text-oren-amber">10% scenario · direct</div>
-                  </th>
-                  <th scope="col" className="px-3 py-3 text-right font-bold text-oren-navy whitespace-nowrap">
-                    2040 Total
-                    <div className="text-xs font-semibold text-oren-amber">stretch · includes assumptions</div>
-                  </th>
-                  <th scope="col" className="px-3 py-3 text-right font-bold text-[#C87445] whitespace-nowrap">
-                    Annual Δ, at least
-                    <div className="text-xs font-normal lowercase text-oren-muted">vs today, CCTS today at upper bound</div>
-                  </th>
+                  {([
+                    { key: 'plant', label: 'Plant & Location', sub: '', subCls: '', cls: 'px-4 min-w-[210px] text-left sticky left-0 z-10 bg-[#F4F7F8] shadow-[1px_0_0_#D5DDE0]' },
+                    { key: 'scope1', label: 'Scope 1 (kt)', sub: clinkerAdjusted ? 'clinker-adjusted' : 'direct chimney', subCls: 'lowercase text-oren-muted', cls: 'px-3' },
+                    { key: 'intensity', label: 'Intensity', sub: `tCO₂ / t cement · ${clinkerAdjusted ? 'adjusted' : 'direct'}`, subCls: 'normal-case text-oren-muted', cls: 'px-3' },
+                    { key: 'heatToday', label: 'Heat Today', sub: 'api-based', subCls: 'lowercase text-oren-teal', cls: 'px-3 bg-orange-50/40' },
+                    { key: 'heat2040', label: 'Heat 2040', sub: 'api-based', subCls: 'lowercase text-oren-teal', cls: 'px-3 bg-orange-50/40' },
+                    { key: 'waterToday', label: 'Water Today', sub: 'assumption', subCls: 'lowercase text-oren-amber', cls: 'px-3 bg-green-50/40' },
+                    { key: 'water2040', label: 'Water 2040', sub: 'assumption', subCls: 'lowercase text-oren-amber', cls: 'px-3 bg-green-50/40' },
+                    { key: 'cctsNotified', label: 'CCTS Illustrative', sub: '2.7% / 6.6% · direct', subCls: 'lowercase text-oren-amber', cls: 'px-3 bg-slate-100' },
+                    { key: 'ccts10', label: 'CCTS Stretch', sub: '10% scenario · direct', subCls: 'lowercase text-oren-amber', cls: 'px-3 bg-slate-100' },
+                    { key: 'total2040', label: '2040 Total', sub: 'stretch · includes assumptions', subCls: 'lowercase font-semibold text-oren-amber', cls: 'px-3 font-bold text-oren-navy' },
+                    { key: 'delta', label: 'Annual Δ, at least', sub: 'vs today, CCTS today at upper bound', subCls: 'normal-case text-oren-muted', cls: 'px-3 font-bold text-[#C87445]' },
+                  ] as { key: SortKey; label: string; sub: string; subCls: string; cls: string }[]).map(col => {
+                    const active = sort.key === col.key
+                    return (
+                      <th
+                        key={col.key}
+                        scope="col"
+                        aria-sort={active ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
+                        className={`py-3 whitespace-nowrap ${col.key === 'plant' ? '' : 'text-right'} ${col.cls}`}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => toggleSort(col.key)}
+                          className={`inline-flex flex-col ${col.key === 'plant' ? 'items-start' : 'items-end'} uppercase tracking-wider font-[inherit] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oren-teal rounded`}
+                        >
+                          <span className="inline-flex items-center gap-1">
+                            {col.label}
+                            <span aria-hidden="true" className={active ? 'text-oren-navy' : 'text-oren-line'}>
+                              {active ? (sort.dir === 'asc' ? '▲' : '▼') : '↕'}
+                            </span>
+                          </span>
+                          {col.sub && <span className={`text-xs font-normal ${col.subCls}`}>{col.sub}</span>}
+                        </button>
+                      </th>
+                    )
+                  })}
                 </tr>
               </thead>
               <tbody className="divide-y divide-oren-line text-xs">
-                {plants.map((plant) => {
-                  const scope1 = clinkerAdjusted
-                    ? plant.emissions.clinker_reallocated_scope1_kt
-                    : plant.emissions.unadjusted_direct_scope1_kt
-                  const intensity = clinkerAdjusted
-                    ? plant.emissions.adjusted_intensity_tco2_per_t
-                    : plant.emissions.unadjusted_intensity_tco2_per_t
-
-                  const fin = plant.three_component_financial_exposure_inr_cr_per_year
-                  const heatToday = fin.baseline_2015_2024.heat_component_api_based_inr_cr_per_year
-                  const heat2040 = fin.horizon_2040.heat_component_api_based_inr_cr_per_year
-                  const waterToday = fin.baseline_2015_2024.water_coastal_component_judgement_inr_cr_per_year
-                  const water2040 = fin.horizon_2040.water_coastal_component_judgement_inr_cr_per_year
-                  const cctsTodayUB = fin.baseline_2015_2024.ccts_today_upper_bound_inr_cr_per_year
-
-                  // Direct emissions only, regardless of the clinker toggle.
-                  const cctsNotified = fin.horizon_2040.ccts_component_notified_unadjusted_inr_cr_per_year
-                  const ccts10Plant = fin.horizon_2040.ccts_component_case_10pct_unadjusted_inr_cr_per_year
-
-                  const total2040_10 = heat2040 + water2040 + ccts10Plant
-                  const deltaFloor = total2040_10 - (heatToday + waterToday + cctsTodayUB)
-
+                {sortedRows.map((row) => {
+                  const { plant, scope1, intensity, heatToday, heat2040, waterToday, water2040, cctsNotified, ccts10: ccts10Plant, total2040: total2040_10, delta: deltaFloor } = row
                   const isSelected = selectedPlantId === plant.plant_id
 
                   return (
@@ -706,7 +704,7 @@ export default function App() {
                         isSelected ? 'bg-oren-soft font-medium' : ''
                       }`}
                     >
-                      <td className="px-4 py-3.5">
+                      <td className={`px-4 py-3.5 sticky left-0 z-10 shadow-[1px_0_0_#D5DDE0] ${isSelected ? 'bg-oren-soft' : 'bg-white'}`}>
                         <div className="font-semibold text-oren-navy flex items-center gap-1.5">
                           {plant.plant_name}
                           {plant.plant_type === 'Grinding unit' && (
@@ -767,7 +765,7 @@ export default function App() {
               {/* Fleet Summary Reconciled Footer */}
               <tfoot className="bg-[#F4F7F8] font-bold text-oren-navy border-t-2 border-oren-line text-xs">
                 <tr>
-                  <td className="px-4 py-3.5">
+                  <td className="px-4 py-3.5 sticky left-0 z-10 bg-[#F4F7F8] shadow-[1px_0_0_#D5DDE0]">
                     <div>Fleet Total (9 Plants Reconciled)</div>
                     <div className="text-xs font-normal text-oren-muted">
                       Asset base: ₹15,450 Cr · Capacity: 23.00 MTPA
@@ -1013,7 +1011,7 @@ export default function App() {
                     <span className="h-2 w-2 rounded-full bg-chart-water mt-1.5 flex-shrink-0" />
                     <div>
                       <strong className="font-semibold">Regulatory Transition: </strong>
-                      CCTS today is not computable from the CSV (no FY2023-24 baseline); the upper bound at notified rates is ₹{selectedPlant.three_component_financial_exposure_inr_cr_per_year.baseline_2015_2024.ccts_today_upper_bound_inr_cr_per_year.toFixed(2)} Cr/yr. On direct emissions, the 2040 liability at notified rates ({selectedPlant.plant_type === 'Integrated' ? '2.7%' : '6.6%'}) is ₹{selectedPlant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.ccts_component_notified_unadjusted_inr_cr_per_year.toFixed(2)} Cr/yr, rising to ₹{selectedPlant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.ccts_component_case_10pct_unadjusted_inr_cr_per_year.toFixed(2)} Cr/yr under the stretch 10% scenario. The clinker view does not change these values.
+                      CCTS today is not computable from the CSV (no FY2023-24 baseline); the upper bound at illustrative rates is ₹{selectedPlant.three_component_financial_exposure_inr_cr_per_year.baseline_2015_2024.ccts_today_upper_bound_inr_cr_per_year.toFixed(2)} Cr/yr. On direct emissions, the 2040 liability at illustrative rates ({selectedPlant.plant_type === 'Integrated' ? '2.7%' : '6.6%'}) is ₹{selectedPlant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.ccts_component_notified_unadjusted_inr_cr_per_year.toFixed(2)} Cr/yr, rising to ₹{selectedPlant.three_component_financial_exposure_inr_cr_per_year.horizon_2040.ccts_component_case_10pct_unadjusted_inr_cr_per_year.toFixed(2)} Cr/yr under the stretch 10% scenario. The clinker view does not change these values.
                     </div>
                   </div>
                 </div>
