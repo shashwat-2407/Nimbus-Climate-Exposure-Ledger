@@ -9,7 +9,7 @@
       "ccts_methodology_statement": "CCTS here = emissions \u00d7 % cut \u00d7 price, with no abatement and no growth to 2040, as a placeholder pending plant baselines.",
       "one_calculation_path_rule": "All summary portfolio figures are derived strictly as the exact sum of the plant rows. Exposure is split into three separate components: heat (API-based), water+coastal (judgement), and CCTS (assumption). It must not be aggregated into an unlabelled single headline.",
       "flow_vs_stock_label_rule": "All annual financial figures represent annual flows and are strictly labelled as 'per year' (INR Crores / year). They must not be compared to the balance sheet asset base without this explicit rate distinction.",
-      "clinker_toggle_rule": "The Clinker Reallocation toggle changes only the inter-plant distribution of emissions and CCTS liabilities between mother kilns (P01, P06) and grinding units (P07, P08, P09). The fleet-wide total Scope 1 emissions (10,932.0 kt) and total CCTS liabilities remain strictly invariant.",
+      "clinker_toggle_rule": "The Clinker toggle changes only the Scope 1 and intensity columns. Fleet Scope 1 (10,932.0 kt) is the same in both views. CCTS is NOT invariant at notified rates (direct vs adjusted differ because integrated and grinding rates differ), so every INR value, including CCTS, is computed on direct emissions in both views.",
       "flood_data_role": "Open-Meteo Flood API river discharge (m3/s) provides contextual hydrological background only and does NOT feed into the financial loss calculation. Lost operating days are derived strictly from the stated heat formula and the labelled judgement-based water and coastal assumptions.",
       "heat_bias_correction_method": "Bias-aware delta method applied: Historical baseline (2015-2024) is sourced from ERA5-based reanalysis, not station data. 2040 projection is computed as historical baseline plus the CMIP6 multi-model ensemble change between 2015-2024 and 2036-2045 (delta method), per plant."
     }
@@ -64,7 +64,8 @@
         "pct_of_increase_from_heat": 2.9,
         "pct_of_increase_from_water_coastal": 13.8,
         "pct_of_increase_from_ccts": 83.3,
-        "statement": "Under the stated assumptions, 83.3% of the increase is regulatory (CCTS liability)."
+        "pct_basis_note": "pct_* and delta_total_10pct compare 2040 CCTS against a zero baseline. CCTS today is not computable, so do not cite them as the share of the increase; use the floor in statement.",
+        "statement": "Heat +5.62 and water+coastal +27.19 Cr/yr are measured against today. CCTS has no baseline; its increase is at least 119.25 Cr/yr (2040 stretch minus today's upper bound of 44.74)."
       },
       "chart_stacked_today_vs_2040": {
         "today": {
@@ -201,7 +202,7 @@
           "pct_of_increase_from_heat": 5.2,
           "pct_of_increase_from_water_coastal": 19.2,
           "pct_of_increase_from_ccts": 75.7,
-          "statement": "Under the stated assumptions, 75.7% of the increase is regulatory (CCTS liability)."
+          "statement": "Plant-level CCTS has no measured baseline; see fleet statement for the floor basis."
         }
       }
     },
@@ -311,7 +312,7 @@
           "pct_of_increase_from_heat": 2.0,
           "pct_of_increase_from_water_coastal": 11.6,
           "pct_of_increase_from_ccts": 86.4,
-          "statement": "Under the stated assumptions, 86.4% of the increase is regulatory (CCTS liability)."
+          "statement": "Plant-level CCTS has no measured baseline; see fleet statement for the floor basis."
         }
       }
     },
@@ -421,7 +422,7 @@
           "pct_of_increase_from_heat": 3.7,
           "pct_of_increase_from_water_coastal": 13.3,
           "pct_of_increase_from_ccts": 83.0,
-          "statement": "Under the stated assumptions, 83.0% of the increase is regulatory (CCTS liability)."
+          "statement": "Plant-level CCTS has no measured baseline; see fleet statement for the floor basis."
         }
       }
     },
@@ -531,7 +532,7 @@
           "pct_of_increase_from_heat": 5.2,
           "pct_of_increase_from_water_coastal": 17.0,
           "pct_of_increase_from_ccts": 77.8,
-          "statement": "Under the stated assumptions, 77.8% of the increase is regulatory (CCTS liability)."
+          "statement": "Plant-level CCTS has no measured baseline; see fleet statement for the floor basis."
         }
       }
     },
@@ -641,7 +642,7 @@
           "pct_of_increase_from_heat": 3.9,
           "pct_of_increase_from_water_coastal": 15.1,
           "pct_of_increase_from_ccts": 80.9,
-          "statement": "Under the stated assumptions, 80.9% of the increase is regulatory (CCTS liability)."
+          "statement": "Plant-level CCTS has no measured baseline; see fleet statement for the floor basis."
         }
       }
     },
@@ -751,7 +752,7 @@
           "pct_of_increase_from_heat": -1.8,
           "pct_of_increase_from_water_coastal": 8.5,
           "pct_of_increase_from_ccts": 93.3,
-          "statement": "Under the stated assumptions, 93.3% of the increase is regulatory (CCTS liability)."
+          "statement": "Plant-level CCTS has no measured baseline; see fleet statement for the floor basis."
         }
       }
     },
@@ -861,7 +862,7 @@
           "pct_of_increase_from_heat": 1.1,
           "pct_of_increase_from_water_coastal": 8.4,
           "pct_of_increase_from_ccts": 90.5,
-          "statement": "Under the stated assumptions, 90.5% of the increase is regulatory (CCTS liability)."
+          "statement": "Plant-level CCTS has no measured baseline; see fleet statement for the floor basis."
         }
       }
     },
@@ -971,7 +972,7 @@
           "pct_of_increase_from_heat": 0.3,
           "pct_of_increase_from_water_coastal": 14.1,
           "pct_of_increase_from_ccts": 85.6,
-          "statement": "Under the stated assumptions, 85.6% of the increase is regulatory (CCTS liability)."
+          "statement": "Plant-level CCTS has no measured baseline; see fleet statement for the floor basis."
         }
       }
     },
@@ -1081,7 +1082,7 @@
           "pct_of_increase_from_heat": 3.1,
           "pct_of_increase_from_water_coastal": 12.0,
           "pct_of_increase_from_ccts": 85.0,
-          "statement": "Under the stated assumptions, 85.0% of the increase is regulatory (CCTS liability)."
+          "statement": "Plant-level CCTS has no measured baseline; see fleet statement for the floor basis."
         }
       }
     }

@@ -135,19 +135,19 @@ export default function App() {
       <header className="border-b border-oren-line bg-white sticky top-0 z-30">
         <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-xl bg-oren-navy flex items-center justify-center text-white font-display font-bold text-base shadow-sm">
+            <div className="h-9 w-9 shrink-0 rounded-xl bg-oren-navy flex items-center justify-center text-white font-display font-bold text-base shadow-sm">
               N
             </div>
             <div>
               <div className="flex items-center gap-2.5">
-                <span className="font-display font-bold text-lg text-oren-navy tracking-tight">
+                <span className="font-display font-bold text-base sm:text-lg text-oren-navy tracking-tight">
                   Nimbus Climate Exposure Ledger
                 </span>
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-oren-soft text-oren-navy font-medium">
+                <span className="hidden sm:inline-block text-xs px-2.5 py-0.5 rounded-full bg-oren-soft text-oren-navy font-medium">
                   Meera Iyer · Head of Sustainability
                 </span>
               </div>
-              <p className="text-xs text-oren-muted">
+              <p className="hidden sm:block text-xs text-oren-muted">
                 Executive Decision Ledger · Physical Climate & Regulatory Transition Intelligence
               </p>
             </div>
@@ -160,7 +160,7 @@ export default function App() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold bg-oren-soft text-oren-navy hover:bg-oren-line transition-colors"
             >
               <Download className="w-3.5 h-3.5 text-oren-teal" />
-              Download source CSV
+              <span className="hidden sm:inline">Download source CSV</span><span className="sm:hidden">CSV</span>
             </a>
           </div>
         </div>

@@ -72,7 +72,7 @@ assumptions = {
         "ccts_methodology_statement": "CCTS here = emissions × % cut × price, with no abatement and no growth to 2040, as a placeholder pending plant baselines.",
         "one_calculation_path_rule": "All summary portfolio figures are derived strictly as the exact sum of the plant rows. Exposure is split into three separate components: heat (API-based), water+coastal (judgement), and CCTS (assumption). It must not be aggregated into an unlabelled single headline.",
         "flow_vs_stock_label_rule": "All annual financial figures represent annual flows and are strictly labelled as 'per year' (INR Crores / year). They must not be compared to the balance sheet asset base without this explicit rate distinction.",
-        "clinker_toggle_rule": "The Clinker Reallocation toggle changes only the inter-plant distribution of emissions and CCTS liabilities between mother kilns (P01, P06) and grinding units (P07, P08, P09). The fleet-wide total Scope 1 emissions (10,932.0 kt) and total CCTS liabilities remain strictly invariant.",
+        "clinker_toggle_rule": "The Clinker toggle changes only the Scope 1 and intensity columns. Fleet Scope 1 (10,932.0 kt) is the same in both views. CCTS is NOT invariant at notified rates (direct vs adjusted differ because integrated and grinding rates differ), so every INR value, including CCTS, is computed on direct emissions in both views.",
         "flood_data_role": "Open-Meteo Flood API river discharge (m3/s) provides contextual hydrological background only and does NOT feed into the financial loss calculation. Lost operating days are derived strictly from the stated heat formula and the labelled judgement-based water and coastal assumptions.",
         "heat_bias_correction_method": "Bias-aware delta method applied: Historical baseline (2015-2024) is sourced from ERA5-based reanalysis, not station data. 2040 projection is computed as historical baseline plus the CMIP6 multi-model ensemble change between 2015-2024 and 2036-2045 (delta method), per plant."
     },
@@ -363,7 +363,7 @@ for p in plants_raw:
                 "pct_of_increase_from_heat": pct_heat_10,
                 "pct_of_increase_from_water_coastal": pct_wc_10,
                 "pct_of_increase_from_ccts": pct_ccts_10,
-                "statement": f"Under the stated assumptions, {pct_ccts_10}% of the increase is regulatory (CCTS liability)."
+                "statement": "Plant-level CCTS has no measured baseline; see fleet statement for the floor basis."
             }
         }
     }
@@ -446,7 +446,8 @@ portfolio_summary = {
             "pct_of_increase_from_heat": fleet_pct_heat,
             "pct_of_increase_from_water_coastal": fleet_pct_wc,
             "pct_of_increase_from_ccts": fleet_pct_ccts,
-            "statement": f"Under the stated assumptions, {fleet_pct_ccts}% of the increase is regulatory (CCTS liability)."
+            "pct_basis_note": "pct_* and delta_total_10pct compare 2040 CCTS against a zero baseline. CCTS today is not computable, so do not cite them as the share of the increase; use the floor in statement.",
+            "statement": f"Heat +{fleet_delta_heat:.2f} and water+coastal +{fleet_delta_wc:.2f} Cr/yr are measured against today. CCTS has no baseline; its increase is at least {fleet_delta_ccts_10 - fleet_ccts_notified_unadj:.2f} Cr/yr (2040 stretch minus today's upper bound of {fleet_ccts_notified_unadj:.2f})."
         },
         "chart_stacked_today_vs_2040": {
             "today": {
