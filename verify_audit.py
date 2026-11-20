@@ -126,13 +126,13 @@ def run_audit():
     print(f"  • CCTS 10% Unadjusted:        ₹{sum_ccts_10_unadj:.2f} Cr/yr == ₹163.99 Cr/yr")
     assert math.isclose(sum_ccts_10_unadj, 163.99, abs_tol=1e-2)
 
-    print(f"  • CCTS 10% Clinker-Adjusted:  ₹{sum_ccts_10_adj:.2f} Cr/yr == ₹163.99 Cr/yr (Strict Invariance)")
+    print(f"  • CCTS 10% Clinker-Adjusted:  ₹{sum_ccts_10_adj:.2f} Cr/yr (flat-rate arithmetic coincidence; not displayed in UI)")
     assert math.isclose(sum_ccts_10_adj, 163.99, abs_tol=1e-2)
 
     print(f"  • CCTS 3% Unadjusted:         ₹{sum_ccts_3_unadj:.2f} Cr/yr == ₹49.19 Cr/yr")
     assert math.isclose(sum_ccts_3_unadj, 49.19, abs_tol=1e-2)
 
-    print(f"  • CCTS 3% Clinker-Adjusted:   ₹{sum_ccts_3_adj:.2f} Cr/yr == ₹49.19 Cr/yr (Strict Invariance)")
+    print(f"  • CCTS 3% Clinker-Adjusted:   ₹{sum_ccts_3_adj:.2f} Cr/yr (flat-rate arithmetic coincidence; not displayed in UI)")
     assert math.isclose(sum_ccts_3_adj, 49.19, abs_tol=1e-2)
 
     print(f"  • CCTS Notified Unadjusted:   ₹{sum_ccts_notified_unadj:.2f} Cr/yr (integrated 2.7%, grinding 6.6%)")
@@ -142,6 +142,25 @@ def run_audit():
     assert math.isclose(sum_ccts_notified_adj, 56.84, abs_tol=0.05)
 
     assert headline["baseline_2015_2024"]["ccts_status"] == "not computable from CSV (no FY2023-24 baseline)"
+
+    # CCTS totals are NOT invariant under clinker adjustment at notified rates
+    assert not math.isclose(sum_ccts_notified_unadj, sum_ccts_notified_adj, abs_tol=1.0), "notified CCTS should differ between direct and adjusted"
+    print(f"  • CCTS Notified direct vs adjusted differ: ₹{sum_ccts_notified_unadj:.2f} vs ₹{sum_ccts_notified_adj:.2f} (no invariance claim; UI uses direct only)")
+
+    # UI contract: CCTS today upper bound (direct) and recomputed attribution floor
+    sum_ub = sum(p["three_component_financial_exposure_inr_cr_per_year"]["baseline_2015_2024"]["ccts_today_upper_bound_inr_cr_per_year"] for p in json_plants)
+    assert math.isclose(sum_ub, 44.74, abs_tol=0.05)
+    delta_heat = sum_heat_2040 - sum_heat_today
+    delta_water = sum_water_2040 - sum_water_today
+    delta_ccts_floor = sum_ccts_10_unadj - sum_ub
+    delta_total_floor = delta_heat + delta_water + delta_ccts_floor
+    print(f"  • Increase floor: heat +{delta_heat:.2f}, water +{delta_water:.2f}, CCTS >= +{delta_ccts_floor:.2f} => >= +{delta_total_floor:.2f} Cr/yr (CCTS >= {100*delta_ccts_floor/delta_total_floor:.1f}%)")
+    assert math.isclose(delta_total_floor, 152.06, abs_tol=0.05)
+    assert math.isclose(sum(
+        p["three_component_financial_exposure_inr_cr_per_year"]["horizon_2040"]["heat_component_api_based_inr_cr_per_year"]
+        + p["three_component_financial_exposure_inr_cr_per_year"]["horizon_2040"]["water_coastal_component_judgement_inr_cr_per_year"]
+        + p["three_component_financial_exposure_inr_cr_per_year"]["horizon_2040"]["ccts_component_notified_unadjusted_inr_cr_per_year"]
+        for p in json_plants), 124.45, abs_tol=0.05), "2040 notified total (direct) should be 124.45"
 
     print("\n" + "=" * 70)
     print("ALL AUDIT ASSERTIONS COMPLETED SUCCESSFULLY WITH ZERO ERRORS!")

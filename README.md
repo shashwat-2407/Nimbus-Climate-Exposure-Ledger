@@ -1,71 +1,71 @@
 # Nimbus Climate Exposure Ledger
 
-> Standalone executive decision prototype built for **Meera Iyer, Head of Sustainability at Nimbus Cement Ltd**, evaluating the physical and regulatory climate exposure of 9 cement manufacturing plants (₹15,450 Cr gross block) today vs 2040.
+A static executive dashboard showing what climate events cost Nimbus Cement Ltd, today and by 2040, across its 9 plants. Built for the Head of Sustainability to present to a board, statutory auditors and lenders.
 
-[![Zero Login](https://img.shields.io/badge/Auth-Zero%20Login-blue)](#)
-[![Reconciliation](https://img.shields.io/badge/Audit-Reconciled%20to%20Zero%20Delta-success)](#)
+![Top of the page: headline question and the Today vs 2040 bars](docs/screenshots/screenshot_top_of_page.png)
 
----
+## What it shows
 
-## 1. Executive Summary & Problem Solved
-Nimbus Cement Ltd operates 9 manufacturing plants across India representing:
-- **₹15,450 Cr** gross asset base
-- **23.00 MTPA** cement capacity / **18.35 Mt** FY26 cement output
-- **10,932.0 kt** direct Scope 1 CO₂ emissions
-- **₹9,658.0 Cr** FY26 annual revenue
+Exposure is always split into three parts and never summed into one unlabelled number.
 
-Meera faces three distinct stakeholder demands:
-1. **Board of Directors:** Financial Value at Risk (lost kiln operating days, lost EBITDA).
-2. **Statutory Auditors:** Auditability, traceable formulas, labelled assumptions, and transparent methodologies.
-3. **Investors & Banks:** Asset impairment vulnerability and regulatory compliance fines under India's Carbon Credit Trading Scheme (BEE CCTS).
+| Component | Label | Source |
+| :--- | :--- | :--- |
+| Extreme heat downtime | `API-based` | ERA5 reanalysis 2015–2024, plus a CMIP6 delta method for 2040 |
+| Water and coastal curtailment | `Assumption` | Site-level judgement, labelled "judgement, not sourced" |
+| CCTS carbon liability | `Assumption, scenario` | Emissions × % cut × ₹1,500/tCO₂ |
 
-This application bridges internal facility data (`nimbus_cement_plants.csv`) with external climate science (ERA5 reanalysis + CMIP6 HighResMIP models) to produce a boardroom-ready risk ledger.
+Fleet facts: 9 plants, ₹15,450 Cr gross asset base, 23.00 MTPA capacity, 18.35 Mt output, 10,932 kt direct Scope 1 CO₂.
 
----
+### Things to know before presenting
 
-## 2. Core Methodology & Deliverables
+- **CCTS today is not computable.** The CSV has no FY2023-24 baseline. The Today bar shows a hatched upper bound at notified rates (≤ ₹44.74 Cr/yr) that is not part of the ₹46.90 Cr/yr total.
+- **The increase is a floor.** Today's CCTS is only an upper bound, so the banner says "at least ₹152.06 Cr/yr", with CCTS at least 78.4%. At notified rates the CCTS increase is ₹0.00 because emissions are held flat.
+- **No gazetted CCTS target runs to 2040.** Both 2040 cases (notified 2.7% / 6.6%, stretch 10%) are scenarios.
+- **The clinker toggle changes Scope 1 and intensity only.** Every ₹ value, including CCTS, uses direct chimney emissions in both views. Fleet Scope 1 is 10,932 kt either way, but CCTS totals would differ at notified rates (₹44.74 vs ₹56.84 Cr/yr), so adjusted CCTS is not shown.
+- **Flood API data is context only.** River discharge does not feed any ₹ figure.
 
-### A. Three-Way Exposure Decoupling
-Every exposure figure is explicitly broken down into three constituent drivers:
-1. **Heat Downtime (`API-based`):** Empirical ERA5 reanalysis (2015–2024) + CMIP6 delta method for 2040.
-2. **Water & Coastal Curtailment (`assumption`):** Site-specific basin constraints (labelled `"judgement, not sourced"`).
-3. **CCTS Regulatory Liability (`assumption, scenario`):** Plant-specific intensity targets evaluated side-by-side at **notified rates** (integrated 2.7%, grinding 6.6%) and **stretch 10% (scenario)** at ₹1,500/tCO₂. Baseline today is not computable from CSV (no FY2023-24 baseline available). No target runs to 2040.
+| Ledger with clinker toggle | Assumptions section | Plant drawer |
+| :---: | :---: | :---: |
+| ![Ledger](docs/screenshots/screenshot_clinker_adjusted.png) | ![Assumptions](docs/screenshots/screenshot_assumptions_panel.png) | ![Drawer](docs/screenshots/screenshot_drawer_grinding_unit.png) |
 
-### B. Clinker Supply-Chain Accounting (Total Invariance Guarantee)
-- **P01 (Chittorgarh)** ships 1.12 Mt clinker to **P07 (Mundra GU)**.
-- **P06 (Baloda Bazar)** ships 0.68 Mt to **P08 (Paradip GU)** and 0.60 Mt to **P09 (Durgapur GU)**.
-- The UI provides an instant toggle between **"Direct Chimney Emissions"** and **"Clinker-Adjusted"**.
-- **Mathematical proof of invariance:** Fleet Scope 1 emissions remain strictly invariant at **10,932.0 kt CO₂**, and fleet CCTS liability remains identical under both views.
+## Run it
 
-### C. Bias-Aware Climate Modeling
-Raw CMIP6 models exhibited an extreme inland warm bias (over-predicting $T_{\max} \ge 43^\circ\text{C}$ by 300%+). The prototype applies the **classical delta method**:
-$$D_{40}(2040) = D_{40,\text{ERA5}}(2015\text{–}24) + \left[D_{40,\text{CMIP6}}(2036\text{–}45) - D_{40,\text{CMIP6}}(2015\text{–}24)\right]$$
-No plant exceeds 25 days/year with $T_{\max} \ge 43^\circ\text{C}$ under this bias-corrected baseline; therefore, acute-heat flags are dropped.
+Requires Node 18+.
 
----
-
-## 3. Key Deliverables Files
-- **Executive Web Prototype:** Accessible locally via `npm run preview` on port 5173.
-- **Developer Ticket:** [`DEVELOPER_TICKET.md`](./DEVELOPER_TICKET.md) — 1-page complete engineering specification.
-- **Process Note:** [`PROCESS_NOTE.md`](./PROCESS_NOTE.md) — 1-page process, research, assumptions, cuts, and the required section on **Where AI was wrong and how I caught it**.
-- **Assumptions Registry:** [`assumptions.json`](./assumptions.json) — Full audit log of parameters and site judgement entries.
-- **Enriched Dataset:** [`enriched_plants_data.json`](./enriched_plants_data.json) — Audited, deterministic JSON payload consumed by the frontend.
-- **Static Source CSV:** Located in `public/nimbus_cement_plants.csv`.
-
----
-
-## 4. Local Development & Build
 ```bash
-# Install dependencies
 npm install
-
-# Start local dev server
-npm run dev
-
-# Build for production (Vite)
-npm run build
-
-# Preview production build locally
-npm run preview
+npm run dev       # http://localhost:5173
+npm run build     # production build in dist/
+npm run preview   # serve the build
 ```
-Production build compiles in ~1.4s with zero external runtime dependencies.
+
+Deep links for review and screenshots: `?clinker=direct`, `?assumptions=open`, `?drawer=P07`.
+
+## Verify the data
+
+```bash
+python3 verify_audit.py
+```
+
+Checks that CSV totals match the brief, that every plant row in the JSON matches the CSV, that fleet figures equal the sum of plant rows, and that the CCTS and attribution figures shown in the UI reconcile. It uses only the Python standard library.
+
+## Repository layout
+
+| Path | Purpose |
+| :--- | :--- |
+| `src/App.tsx` | The whole UI (React 18, Tailwind) |
+| `src/data/` | Data the UI reads: `enriched_plants_data.json`, `assumptions.json` |
+| `tailwind.config.js`, `src/index.css` | Oren design tokens |
+| `design.md` | Design system specification |
+| `nimbus_cement_plants.csv`, `public/` | Source CSV and the copy served for download |
+| `build_v*.py`, `enrich_data.py` | Scripts that produced the enriched JSON |
+| `open_meteo_*_cache.json` | Cached Open-Meteo responses, so the data can be rebuilt without refetching |
+| `verify_audit.py` | Audit and reconciliation checks |
+| `DEVELOPER_TICKET.md` | Engineering specification |
+| `PROCESS_NOTE.md` | Research, assumptions, scope cuts, and where AI was wrong |
+
+`enriched_plants_data.json` exists at the repo root (read by `verify_audit.py`) and in `src/data/` (read by the app). Keep the two identical.
+
+## Status
+
+Prototype. Heat figures are model-derived from reanalysis, not station data. Water, coastal and CCTS figures rest on stated assumptions listed in the in-app assumptions section and in `assumptions.json`.

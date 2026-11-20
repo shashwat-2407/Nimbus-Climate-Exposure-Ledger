@@ -46,5 +46,5 @@
    - **CCTS Carbon Liability:** Navy bar/indicator + Amber pill chip (`Assumption, illustrative`, dashed border).
 3. **Assumption Visual Styling:** Dashed 1px borders (`border-dashed border-amber-300`) on assumption cells/cards with amber chip (`#A16207` on `#FDF3DC`).
 4. **Today vs 2040 Visual Encoding:** "Today" is solid filled. "2040" is the same hue with a darker, prominent outline. Two distinct hues are never used for the two years.
-5. **Clinker Toggle:** Pill segmented control switching between "Direct chimney" and "Clinker-adjusted" with invariant fleet total displayed alongside: `10,932 kt CO₂`.
-6. **Assumptions Panel:** Plain white, full-width inline audit table on the page (not in a modal) detailing all financial, operational, and site-level parameters.
+5. **Clinker Toggle:** Single pill segmented control in the ledger table header, switching between "Direct chimney" and "Clinker-adjusted". Track `surface` with 1px `line` border, active segment navy-to-teal gradient with white text, 40px high, visible focus ring, `aria-pressed`. It changes only the Scope 1 and intensity columns; all ₹ values use direct emissions.
+6. **Assumptions Panel:** Plain white, full-width inline audit section on the page (not in a modal, not a tab), opened by a plain "View assumptions" button.

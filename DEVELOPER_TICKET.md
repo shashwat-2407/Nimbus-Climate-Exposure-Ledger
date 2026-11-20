@@ -24,7 +24,7 @@ The application must decouple financial risk into three explicit components (**H
 - **Revenue (FY2025-26):** ₹9,658.0 Cr
 - **Fleet Scope 1 Emissions:** 10,932.0 kt CO₂
 
-### 2.2 Clinker Supply Chain Accounting Rule (Strict Invariance)
+### 2.2 Clinker Supply Chain Accounting Rule (Scope 1 Reallocation Only)
 In the raw company ledger, clinker manufacturing emissions are recorded at the pyroprocessing mother plant chimneys:
 - **P01 (Chittorgarh):** Produces 3.43 Mt clinker, ships 1.12 Mt to **P07 (Mundra GU)**.
   - Clinker specific emission factor: $3,125.0\text{ kt} / 3.43\text{ Mt} = 0.911079\text{ kt/Mt}$.
@@ -35,7 +35,8 @@ In the raw company ledger, clinker manufacturing emissions are recorded at the p
   - Transferred to P08: $0.68 \times 0.820598 = 558.007\text{ kt CO}_2$.
   - Transferred to P09: $0.60 \times 0.820598 = 492.359\text{ kt CO}_2$.
   - Adjusted P06: $1,419.635\text{ kt}$; Adjusted P08: $579.007\text{ kt}$; Adjusted P09: $516.359\text{ kt}$.
-- **Invariant Assertion:** $\sum \text{Adjusted Scope 1} \equiv \sum \text{Direct Scope 1} = \mathbf{10,932.0\text{ kt CO}_2}$.
+- **Invariant Assertion (Scope 1 only):** $\sum \text{Adjusted Scope 1} \equiv \sum \text{Direct Scope 1} = \mathbf{10,932.0\text{ kt CO}_2}$. Reallocation moves emissions between plants; it does not change the fleet Scope 1 total.
+- **CCTS basis (no invariance claim):** Every CCTS ₹ value in the UI, including the headline, the bars, the KPI cards and the ledger, is computed on **direct (unadjusted) Scope 1**, in both toggle states. CCTS totals are not invariant under clinker adjustment: at notified rates the fleet total is ₹44.74 Cr/yr on direct emissions and ₹56.84 Cr/yr on clinker-adjusted emissions, because the integrated and grinding rates differ (2.7% vs 6.6%). The flat 10% case happens to sum to ₹163.99 Cr/yr either way, which is arithmetic, not a guarantee, and the UI does not show adjusted CCTS.
 
 ---
 
@@ -67,7 +68,7 @@ All summary figures must equal the exact sum of plant rows: $\text{Fleet Total} 
 ### 3.4 CCTS Regulatory Transition Liability (Label: "assumption", "scenario")
 - Formula: $\text{Liability (₹ Cr/year)} = (\text{Scope 1 (kt)} \times 1000 \times \text{cut\_pct} \times \text{Carbon Price}) / 10^7$.
 - Carbon Price $= \text{₹}1,500 / \text{tCO}_2$ (assumption).
-- Baseline (2015–2024): Not computable from CSV (no FY2023-24 baseline available). Upper bound at notified averages (integrated 2.7%, grinding 6.6%) is ₹44.73 Cr/yr (direct) / ₹56.84 Cr/yr (clinker-adjusted).
+- Baseline (2015–2024): Not computable from CSV (no FY2023-24 baseline available). Upper bound at notified averages (integrated 2.7%, grinding 6.6%) on direct emissions is ₹44.74 Cr/yr. Shown on the "Today" bar as a hatched segment labelled "CCTS today, upper bound at notified rates", and excluded from the ₹46.90 Cr/yr Today total.
 - 2040 Horizon: Evaluated as illustrative compliance scenarios side by side: **Notified Rates** (integrated 2.7%, grinding 6.6%) and **Stretch 10% (scenario)** (₹163.99 Cr/yr fleet).
 - Regulatory note: No gazetted BEE reduction target runs to 2040.
 
@@ -76,19 +77,27 @@ All summary figures must equal the exact sum of plant rows: $\text{Fleet Total} 
 ## 4. Frontend Component Specifications
 
 1. **Header:** Title, Meera Iyer persona badge, "Zero Login Public" badge, Gross Asset Base (₹15,450 Cr).
-2. **Clinker Toggle:** Segmented control between `[Direct Chimney]` and `[Clinker-Adjusted]` with explicit total invariance text.
+2. **Clinker Toggle:** One segmented control, placed in the ledger table header (not the page toolbar). Track: light surface (`#F4F7F8`) with 1 px border; active segment: navy-to-teal gradient with white text; 40 px height; visible focus ring; each segment is a `<button>` with `aria-pressed`.
+   - It changes **only** the Scope 1 (kt) and Intensity (tCO₂/t cement) columns, plus the drawer's Scope 1 bullet and the fleet Scope 1 footer.
+   - It must **not** change any ₹ value: heat, water, CCTS, 2040 total, annual Δ, bars, KPI cards, headline and attribution banner are identical in both states.
+   - Helper text beside the control states this.
 3. **Headline KPI Bar (3-Way Split):**
    - Baseline Card: ₹46.90 Cr/yr (Heat ₹22.11 Cr/yr, Water+Coast ₹24.79 Cr/yr, CCTS ₹0.00 Cr/yr).
    - 2040 Card (10% CCTS): ₹243.70 Cr/yr (Heat ₹27.73 Cr/yr, Water+Coast ₹51.98 Cr/yr, CCTS ₹163.99 Cr/yr).
-   - 2040 Card (3% CCTS): ₹128.90 Cr/yr (Heat ₹27.73 Cr/yr, Water+Coast ₹51.98 Cr/yr, CCTS ₹49.19 Cr/yr).
-4. **Attribution Banner:**
-   - Display: "+₹196.80 Cr/yr total increase. Under the stated assumptions, 83.3% of the increase is regulatory (CCTS liability), 13.8% water/coastal, 2.9% extreme heat."
+   - 2040 Card (notified rates, direct emissions): ₹124.45 Cr/yr (Heat ₹27.73 Cr/yr, Water+Coast ₹51.98 Cr/yr, CCTS ₹44.74 Cr/yr).
+   - The earlier 3% CCTS card is not displayed. The Today bar carries a hatched "CCTS today, upper bound at notified rates" segment of up to ₹44.74 Cr/yr.
+4. **Attribution Banner:** Computed in the UI from the data, not read from a stored sentence.
+   - Today has no measured CCTS baseline, so CCTS is attributed as a floor: 2040 stretch ₹163.99 minus today's upper bound ₹44.74 = at least +₹119.25 Cr/yr. Heat (+₹5.62) and water+coastal (+₹27.19) are exact deltas.
+   - Display: "at least +₹152.06 Cr/yr", with CCTS ≥78.4%, water ≤17.9%, heat ≤3.7%.
+   - At notified rates the CCTS increase is ₹0.00 (same emissions and rates today and in 2040); the banner says so.
+   - The earlier "83.3% regulatory" line compared 2040 CCTS against a zero baseline and is removed.
 5. **Asset Ledger Table:**
    - Nine rows + Fleet summary footer.
-   - Column groups: Plant info, Scope 1, Today (Heat, Water+Coast, CCTS, Total), 2040 (Heat, Water+Coast, CCTS 3%, CCTS 10%, Total 10%), Total Annual $\Delta$.
+   - Columns: Plant info, Scope 1 (toggle), Intensity (toggle), Heat Today, Heat 2040, Water Today, Water 2040, CCTS Notified (direct), CCTS Stretch 10% (direct), 2040 Total (stretch), Annual $\Delta$ (at least; CCTS today taken at its upper bound).
+   - Only Scope 1 and Intensity respond to the clinker toggle.
    - Click to expand row: Climate profiles, water basin details, clinker notes.
 6. **Assumptions & Audit Registry View:**
-   - Tab switching to dedicated audit table listing all financial, heat, CCTS, and site judgement entries.
+   - A plain "View assumptions" button (`aria-expanded`, `aria-controls`) opens an inline section below the ledger, and a "Hide assumptions" button closes it. No tabs. The section lists all financial, heat, CCTS, and site judgement entries.
 
 ---
 
@@ -97,3 +106,4 @@ All summary figures must equal the exact sum of plant rows: $\text{Fleet Total} 
 - **Client Processing:** Zero scientific simulation in browser; read statically from `enriched_plants_data.json`.
 - **Auth:** Zero authentication, public link.
 - **Verification:** All table cells must reconcile with portfolio totals to within 2 decimal places.
+- **Toggle assertions:** (1) Scope 1 and Intensity cells differ between states for P01, P06, P07, P08 and P09; (2) every other table cell, footer cell and chart value is byte-identical across states; (3) fleet Scope 1 is 10,932.0 kt in both states; (4) all CCTS values equal the direct-emissions values. `verify_audit.py` asserts (3) and (4) against the data; (1) and (2) were checked in the browser.

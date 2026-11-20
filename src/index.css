@@ -44,3 +44,15 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     rgba(161, 98, 7, 0.05) 12px
   );
 }
+
+/* Hatched navy stripes: CCTS today, upper bound (a bound, not a measured value) */
+.bg-hatch-ccts {
+  background-color: #FFFFFF;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(30, 43, 86, 0.55),
+    rgba(30, 43, 86, 0.55) 3px,
+    transparent 3px,
+    transparent 7px
+  );
+}
