@@ -368,7 +368,7 @@ export default function App() {
         </section>
 
         {/* Three Decoupled KPI Cards */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* KPI Card 1: Extreme Heat */}
           <div className="bg-white rounded-card p-6 border border-oren-line shadow-oren flex flex-col justify-between">
             <div className="space-y-3">
@@ -477,7 +477,7 @@ export default function App() {
             </div>
 
             <div className="mt-6 pt-5 border-t border-oren-line space-y-3">
-              <div className="flex items-baseline justify-between">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-3">
                 <div>
                   <div className="text-xs text-oren-muted mb-0.5">Stretch 10% scenario</div>
                   <div className="flex items-baseline gap-1.5">
@@ -531,9 +531,9 @@ export default function App() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 lg:gap-6 bg-white rounded-xl p-4 border border-oren-line">
               <div className="space-y-1">
                 <div className="text-xs text-oren-muted">Projected net annual increase, at least</div>
-                <div className="text-2xl font-display font-bold text-oren-navy tabular-nums">
+                <div className="text-2xl font-display font-bold text-oren-navy tabular-nums whitespace-nowrap">
                   +₹{deltaTotal.toFixed(2)}{' '}
-                  <span className="text-xs font-normal text-oren-muted">Cr / yr</span>
+                  <span className="text-xs font-normal text-oren-muted whitespace-nowrap">Cr / yr</span>
                 </div>
               </div>
 
@@ -583,7 +583,7 @@ export default function App() {
                   9-plant exposure ledger
                 </h2>
                 <p className="text-sm text-oren-muted mt-0.5">
-                  Select a plant row for its detail. Column headers sort the table; Heat and Water sort by their 2040 value.
+                  Select a plant row for its detail. Heat and water cells read today → 2040, in ₹ Cr per year. Column headers sort; Heat and Water sort by 2040.
                 </p>
               </div>
               <button
@@ -653,11 +653,11 @@ export default function App() {
               <thead className="bg-oren-surface text-xs font-semibold text-oren-muted uppercase tracking-wider border-b border-oren-line">
                 <tr>
                   {([
-                    { key: 'plant', label: 'Plant and location', sub: '', subCls: '', cls: 'px-4 min-w-[153px] text-left sticky left-0 z-10 bg-oren-surface shadow-[1px_0_0_#D5DDE0]' },
+                    { key: 'plant', label: 'Plant and location', sub: '', subCls: '', cls: 'px-4 min-w-[200px] text-left sticky left-0 z-10 bg-oren-surface shadow-[1px_0_0_#D5DDE0]' },
                     { key: 'scope1', label: 'Scope 1 (kt)', sub: clinkerAdjusted ? 'clinker-adjusted' : 'direct chimney', subCls: 'lowercase text-oren-muted', cls: 'px-2.5 min-w-[112px]' },
                     { key: 'intensity', label: 'Intensity', sub: `tCO₂/t · ${clinkerAdjusted ? 'adjusted' : 'direct'}`, subCls: 'normal-case text-oren-muted', cls: 'px-2.5 min-w-[132px]' },
-                    { key: 'heat2040', label: 'Heat', sub: 'today → 2040 · API-based', subCls: 'normal-case text-oren-teal', cls: 'px-2.5 bg-orange-50/40' },
-                    { key: 'water2040', label: 'Water and coastal', sub: 'today → 2040 · assumption', subCls: 'normal-case text-oren-amber', cls: 'px-2.5 bg-green-50/40' },
+                    { key: 'heat2040', label: 'Heat', sub: 'API-based', subCls: 'normal-case text-oren-teal', cls: 'px-2.5 bg-orange-50/40' },
+                    { key: 'water2040', label: 'Water and coastal', sub: 'assumption', subCls: 'normal-case text-oren-amber', cls: 'px-2.5 bg-green-50/40' },
                     { key: 'cctsNotified', label: 'CCTS illustrative', sub: '2.7% / 6.6%', subCls: 'lowercase text-oren-amber', cls: 'px-2.5 bg-slate-100' },
                     { key: 'ccts10', label: 'CCTS stretch', sub: '10% scenario', subCls: 'lowercase text-oren-amber', cls: 'px-2.5 bg-slate-100' },
                     { key: 'total2040', label: '2040 total', sub: 'stretch scenario', subCls: 'lowercase font-semibold text-oren-amber', cls: 'px-2.5 font-bold text-oren-navy' },
@@ -678,7 +678,7 @@ export default function App() {
                         >
                           <span className="inline-flex items-center gap-1 whitespace-normal">
                             {col.label}
-                            <span aria-hidden="true" className={active ? 'text-oren-navy' : 'text-oren-line'}>
+                            <span aria-hidden="true" className={`inline-block w-3 text-center ${active ? 'text-oren-navy' : 'text-oren-line'}`}>
                               {active ? (sort.dir === 'asc' ? '▲' : '▼') : '↕'}
                             </span>
                           </span>
@@ -698,21 +698,21 @@ export default function App() {
                     <tr
                       key={plant.plant_id}
                       onClick={() => setSelectedPlantId(isSelected ? null : plant.plant_id)}
-                      className={`cursor-pointer transition-colors hover:bg-oren-soft/60 ${
+                      className={`group cursor-pointer transition-colors hover:bg-oren-soft ${
                         isSelected ? 'bg-oren-soft font-medium' : ''
                       }`}
                     >
-                      <td className={`px-4 py-3.5 sticky left-0 z-10 shadow-[1px_0_0_#D5DDE0] ${isSelected ? 'bg-oren-soft' : 'bg-white'}`}>
+                      <td className={`px-4 py-3.5 sticky left-0 z-10 shadow-[1px_0_0_#D5DDE0] ${isSelected ? 'bg-oren-soft' : 'bg-white group-hover:bg-oren-soft'}`}>
                         <div className="font-semibold text-oren-navy flex items-center gap-1.5">
                           {plant.plant_name}
+                        </div>
+                        <div className="text-xs text-oren-muted mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-1">
+                          {plant.town}, {plant.state}
                           {plant.plant_type === 'Grinding unit' && (
-                            <span className="inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold bg-oren-soft text-oren-navy border border-oren-line">
-                              GU
+                            <span title="Grinding unit" className="inline-flex items-center whitespace-nowrap rounded-full px-2 py-0 text-xs font-semibold bg-oren-soft text-oren-navy border border-oren-line">
+                              Grinding unit
                             </span>
                           )}
-                        </div>
-                        <div className="text-xs text-oren-muted mt-0.5">
-                          {plant.town}, {plant.state}
                         </div>
                       </td>
 
@@ -756,9 +756,9 @@ export default function App() {
               <tfoot className="bg-oren-surface font-bold text-oren-navy border-t-2 border-oren-line text-sm">
                 <tr>
                   <td className="px-4 py-3.5 sticky left-0 z-10 bg-oren-surface shadow-[1px_0_0_#D5DDE0]">
-                    <div>Fleet total (9 plants, reconciled)</div>
+                    <div>Fleet total, 9 plants</div>
                     <div className="text-xs font-normal text-oren-muted">
-                      Asset base: ₹15,450 Cr · Capacity: 23.00 MTPA
+                      ₹15,450 Cr assets · 23.00 MTPA
                     </div>
                   </td>
                   <td className="px-2.5 py-3.5 text-right tabular-nums">
