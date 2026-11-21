@@ -583,7 +583,7 @@ export default function App() {
                   9-plant exposure ledger
                 </h2>
                 <p className="text-sm text-oren-muted mt-0.5">
-                  Select a plant row to see its heat, water and carbon figures. Column headers sort the table.
+                  Select a plant row for its detail. Column headers sort the table; Heat and Water sort by their 2040 value.
                 </p>
               </div>
               <button
@@ -653,13 +653,11 @@ export default function App() {
               <thead className="bg-oren-surface text-xs font-semibold text-oren-muted uppercase tracking-wider border-b border-oren-line">
                 <tr>
                   {([
-                    { key: 'plant', label: 'Plant and location', sub: '', subCls: '', cls: 'px-4 min-w-[190px] text-left sticky left-0 z-10 bg-oren-surface shadow-[1px_0_0_#D5DDE0]' },
+                    { key: 'plant', label: 'Plant and location', sub: '', subCls: '', cls: 'px-4 min-w-[170px] text-left sticky left-0 z-10 bg-oren-surface shadow-[1px_0_0_#D5DDE0]' },
                     { key: 'scope1', label: 'Scope 1 (kt)', sub: clinkerAdjusted ? 'clinker-adjusted' : 'direct chimney', subCls: 'lowercase text-oren-muted', cls: 'px-2.5' },
                     { key: 'intensity', label: 'Intensity', sub: `tCO₂/t · ${clinkerAdjusted ? 'adjusted' : 'direct'}`, subCls: 'normal-case text-oren-muted', cls: 'px-2.5' },
-                    { key: 'heatToday', label: 'Heat today', sub: 'api-based', subCls: 'lowercase text-oren-teal', cls: 'px-2.5 bg-orange-50/40' },
-                    { key: 'heat2040', label: 'Heat 2040', sub: 'api-based', subCls: 'lowercase text-oren-teal', cls: 'px-2.5 bg-orange-50/40' },
-                    { key: 'waterToday', label: 'Water today', sub: 'assumption', subCls: 'lowercase text-oren-amber', cls: 'px-2.5 bg-green-50/40' },
-                    { key: 'water2040', label: 'Water 2040', sub: 'assumption', subCls: 'lowercase text-oren-amber', cls: 'px-2.5 bg-green-50/40' },
+                    { key: 'heat2040', label: 'Heat', sub: 'today → 2040 · API-based', subCls: 'normal-case text-oren-teal', cls: 'px-2.5 bg-orange-50/40' },
+                    { key: 'water2040', label: 'Water and coastal', sub: 'today → 2040 · assumption', subCls: 'normal-case text-oren-amber', cls: 'px-2.5 bg-green-50/40' },
                     { key: 'cctsNotified', label: 'CCTS illustrative', sub: '2.7% / 6.6%', subCls: 'lowercase text-oren-amber', cls: 'px-2.5 bg-slate-100' },
                     { key: 'ccts10', label: 'CCTS stretch', sub: '10% scenario', subCls: 'lowercase text-oren-amber', cls: 'px-2.5 bg-slate-100' },
                     { key: 'total2040', label: '2040 total', sub: 'stretch scenario', subCls: 'lowercase font-semibold text-oren-amber', cls: 'px-2.5 font-bold text-oren-navy' },
@@ -726,20 +724,12 @@ export default function App() {
                         {intensity.toFixed(3)}
                       </td>
 
-                      <td className="px-2.5 py-3.5 text-right tabular-nums text-oren-navy bg-orange-50/20">
-                        ₹{heatToday.toFixed(2)}
+                      <td className="px-2.5 py-3.5 text-right tabular-nums text-oren-navy bg-orange-50/30 whitespace-nowrap">
+                        <span className="text-oren-muted">₹{heatToday.toFixed(2)}</span> <span aria-hidden="true" className="text-oren-muted">→</span> <span className="font-semibold">₹{heat2040.toFixed(2)}</span>
                       </td>
 
-                      <td className="px-2.5 py-3.5 text-right tabular-nums text-oren-navy font-semibold bg-orange-50/30">
-                        ₹{heat2040.toFixed(2)}
-                      </td>
-
-                      <td className="px-2.5 py-3.5 text-right tabular-nums text-oren-navy bg-green-50/20">
-                        ₹{waterToday.toFixed(2)}
-                      </td>
-
-                      <td className="px-2.5 py-3.5 text-right tabular-nums text-oren-navy font-semibold bg-green-50/30">
-                        ₹{water2040.toFixed(2)}
+                      <td className="px-2.5 py-3.5 text-right tabular-nums text-oren-navy bg-green-50/30 whitespace-nowrap">
+                        <span className="text-oren-muted">₹{waterToday.toFixed(2)}</span> <span aria-hidden="true" className="text-oren-muted">→</span> <span className="font-semibold">₹{water2040.toFixed(2)}</span>
                       </td>
 
                       <td className="px-2.5 py-3.5 text-right tabular-nums font-semibold text-oren-navy bg-slate-50/60">
@@ -777,17 +767,11 @@ export default function App() {
                   <td className="px-2.5 py-3.5 text-right tabular-nums">
                     {((clinkerAdjusted ? portfolio_summary.portfolio_totals.total_clinker_adjusted_scope1_kt : portfolio_summary.portfolio_totals.total_scope1_co2_kt) / (portfolio_summary.portfolio_totals.total_cement_output_fy2025_26_mt * 1000)).toFixed(3)}
                   </td>
-                  <td className="px-2.5 py-3.5 text-right tabular-nums bg-orange-50/40">
-                    ₹{baseline.heat_component_api_based_inr_cr_per_year.toFixed(2)}
+                  <td className="px-2.5 py-3.5 text-right tabular-nums bg-orange-50/40 whitespace-nowrap">
+                    <span className="text-oren-muted font-normal">₹{baseline.heat_component_api_based_inr_cr_per_year.toFixed(2)}</span> → ₹{horizon.heat_component_api_based_inr_cr_per_year.toFixed(2)}
                   </td>
-                  <td className="px-2.5 py-3.5 text-right tabular-nums bg-orange-50/40">
-                    ₹{horizon.heat_component_api_based_inr_cr_per_year.toFixed(2)}
-                  </td>
-                  <td className="px-2.5 py-3.5 text-right tabular-nums bg-green-50/40">
-                    ₹{baseline.water_coastal_component_judgement_inr_cr_per_year.toFixed(2)}
-                  </td>
-                  <td className="px-2.5 py-3.5 text-right tabular-nums bg-green-50/40">
-                    ₹{horizon.water_coastal_component_judgement_inr_cr_per_year.toFixed(2)}
+                  <td className="px-2.5 py-3.5 text-right tabular-nums bg-green-50/40 whitespace-nowrap">
+                    <span className="text-oren-muted font-normal">₹{baseline.water_coastal_component_judgement_inr_cr_per_year.toFixed(2)}</span> → ₹{horizon.water_coastal_component_judgement_inr_cr_per_year.toFixed(2)}
                   </td>
                   <td className="px-2.5 py-3.5 text-right tabular-nums bg-slate-100">
                     ₹{cctsNotified2040.toFixed(2)}
