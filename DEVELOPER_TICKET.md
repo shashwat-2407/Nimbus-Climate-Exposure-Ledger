@@ -1,52 +1,47 @@
 # CLIM-101: Nimbus Climate Exposure Ledger, v1
 
-**For:** an engineer building v1 for real. **User:** Meera Iyer, Head of Sustainability, Nimbus Cement (9 plants), presenting to her board. **Prototype:** this repo; `verify_audit.py` holds the golden numbers.
+**For:** an engineer building v1 for real. **User:** Meera Iyer, Head of Sustainability, Nimbus Cement (9 plants), who must tell her board what climate events could cost the company today and by 2040. **Prototype:** this repo, data baked in. `verify_audit.py` holds the golden numbers.
 
-**Start here:** the prototype runs on baked-in data. Your job is to (1) move the maths into a tested module, (2) automate the data refresh, (3) add a validated plant upload, (4) make assumptions editable, (5) swap the guessed water days for Aqueduct scores. Plain-language version: README, "For the developer".
+## 1. What you build
+A hosted ledger that gives the same answer as the prototype, but from a tested calculation and a **scheduled** data refresh. It is not a live-data product: weather data is fetched by an offline job, saved as a dated snapshot, and the page reads the snapshot. That keeps every number reproducible for an auditor. The only external data source in v1 is Open-Meteo. NGFS, BEE and other sources are out of v1 because they need decisions from Meera first (§6).
 
-## 1. Goal
-Answer one question: *what is our business exposure to climate events today and by 2040?* Three parts, never summed into one unlabelled number: **Heat** (data-based), **Water and coastal** (assumption), **CCTS carbon cost** (scenario). Every figure states its unit (₹ Cr per year) and where it came from.
+- **Step A, ship first.** (1) One tested calculation module. (2) An offline job that refreshes weather data. The page looks the same and §4 still matches.
+- **Step B.** (3) Validated plant upload. (4) Editable, versioned assumptions with an edit log.
+- **Step C, after sign-off.** (5) WRI Aqueduct 4.0 scores replace the judgement water days. Do not start until product agrees how a score maps to lost days.
 
-## 2. In scope for v1
-Everything the prototype shows today.
-**Out of scope:** asset damage and impairment (flood, cyclone), Scope 3, GIS maps, login, multi-company, live API calls from the browser.
+**Out of scope:** asset damage (flood, cyclone), Scope 3, maps, login, multi-company, live API calls from the browser.
 
-## 3. Build order
-1. **Calculation module with tests.** Port the formulas in §4 into a pure function. Tests assert the golden values in §6.
-2. **Data pipeline (offline job).** Fetch ERA5 (2015 to 2024) and CMIP6 (2036 to 2045) from Open-Meteo, and store versioned snapshots with the retrieval date. The UI shows "data as of".
-3. **Plant upload.** Replace the bundled CSV with a validated upload (schema in §5).
-4. **Editable assumptions.** Move days, margin, carbon price, rates and water days into versioned config. Each edit is logged.
-5. **Replace the water judgement** with WRI Aqueduct 4.0 scores (offline spatial join).
+## 2. Rules that must not break
+- Heat, Water and coastal, and CCTS are never summed into one unlabelled number. Each is labelled API-based, assumption, or scenario. Units are ₹ Cr per year.
+- Every total is the sum of plant rows.
+- The clinker toggle changes only the Scope 1 and intensity columns. All ₹ values use direct emissions.
+- CCTS today is not computable (no FY2023-24 baseline), so it stays outside the Today total.
 
-## 4. Calculations (single path: every total is the sum of plant rows)
-- Daily EBITDA (₹ Cr/day) = output (Mt) × 100 / 330. Assumes ₹1,000/t margin and 330 operating days.
-- Heat days: D40/D43 = days with Tmax ≥ 40/43 °C. 2040 value = ERA5 baseline + [CMIP6(2036 to 2045) − CMIP6(2015 to 2024)], mean of EC_Earth3P_HR and MRI_AGCM3_2_S, floored at 0, D43 ≤ D40.
-- Heat lost days = [(D40 − D43) × 0.10 + D43 × 0.35] × damping (1.0 kiln, 0.5 grinding unit). Heat ₹ = lost days × daily EBITDA.
-- Water and coastal ₹ = (water days + coastal days) × daily EBITDA. Days are judgement per plant.
-- CCTS ₹ = Scope 1 (kt) × 1000 × cut % × ₹1,500 / 10⁷, **on direct (unadjusted) Scope 1**. Cases: illustrative 2.7% integrated / 6.6% grinding, and 10% stretch. No abatement, no growth.
-- Clinker reallocation: transferred kt = clinker shipped (Mt) × (mother plant Scope 1 / clinker produced). Used only for the Scope 1 and intensity columns.
+## 3. Calculations
+Formulas are in `src/App.tsx`; `build_data.py` builds the JSON the page reads. The script that fetched the weather caches (`open_meteo_*_cache.json`) is not in the repo; you write it in A2.
+- **Daily EBITDA** (₹ Cr/day) = output (Mt) × 100 / 330, from ₹1,000/t margin and 330 operating days.
+- **Heat data**, daily `temperature_2m_max` per plant: ERA5 from `archive-api.open-meteo.com/v1/archive`, 2015 to 2024. CMIP6 from `climate-api.open-meteo.com/v1/climate`, `models=EC_Earth3P_HR,MRI_AGCM3_2_S`, for 2015 to 2024 and 2036 to 2045. D40 and D43 = average days a year at ≥ 40 and ≥ 43 °C; average the two models.
+- **2040 days** = ERA5 baseline + (CMIP6 2036 to 2045 − CMIP6 2015 to 2024), floored at 0, D43 ≤ D40.
+- **Heat ₹** = [(D40 − D43) × 0.10 + D43 × 0.35] × damping (1.0 kiln, 0.5 grinding unit) × daily EBITDA.
+- **Water and coastal ₹** = (water days + coastal days) × daily EBITDA. Days are judgement, in `build_data.py`.
+- **CCTS ₹** = direct Scope 1 (kt) × 1000 × cut % × ₹1,500 / 10⁷, with current intensity as the baseline. Cases: illustrative 2.7% integrated and 6.6% grinding, and 10% stretch. No abatement or growth.
+- **Clinker reallocation:** a kiln's Scope 1 per Mt clinker produced × clinker shipped moves to the receiving unit. The CSV holds destinations only as text in `notes`: P01 to P07 (1.12 Mt), P06 to P08 (0.68 Mt) and P09 (0.60 Mt). Add a `clinker_destination` column.
 
-## 5. Data contract
-Plant CSV columns as in `nimbus_cement_plants.csv`. Reject files where `scope1` is non-numeric, shipped clinker exceeds produced, or a grinding unit has produced clinker. Fleet totals must tie out to the rows.
+## 4. Acceptance: golden values (₹ Cr/yr)
+- Heat 22.11 today, 27.73 in 2040. Water and coastal 24.79 today, 51.98 in 2040. Today total 46.90.
+- CCTS: illustrative 44.74, stretch 163.99. 2040 totals 124.45 (illustrative) and 243.70 (stretch). Today's CCTS shows as a hatched bound of at most 44.74.
+- Increase vs today: heat +5.62, water +27.19, CCTS at least +119.25, total at least +152.06.
+- Fleet Scope 1 is 10,932.0 kt in both toggle states; every ₹ value is identical in both.
+- Ledger sorts by any column (default 2040 total, descending), first column sticky. No horizontal page scroll at 1280×900.
 
-## 6. Acceptance criteria (golden values)
-- Heat today ₹22.11, 2040 ₹27.73 Cr/yr. Water today ₹24.79, 2040 ₹51.98. Today total ₹46.90 (excludes CCTS).
-- CCTS direct: illustrative ₹44.74, stretch ₹163.99. 2040 totals ₹124.45 (illustrative) and ₹243.70 (stretch).
-- Today's CCTS is **not computable** (no FY2023-24 baseline). Show ≤ ₹44.74 as a hatched bound, outside the Today total.
-- Attribution: heat +5.62, water +27.19, CCTS at least +119.25, total at least +₹152.06 Cr/yr. At illustrative rates the CCTS increase is 0.
-- **Clinker toggle** (control in the ledger header; 40 px; `aria-pressed`; visible focus): changes only Scope 1 and intensity. Every ₹ value is identical in both states. Fleet Scope 1 is 10,932.0 kt in both.
-- Ledger sortable by any column (default 2040 total, descending); first column sticky; footer unaffected by sort.
-- "View assumptions" opens an inline section, not tabs or a modal. 1280×900 renders without horizontal page scroll.
+## 5. Data contract and edge cases
+- Plant CSV as in `nimbus_cement_plants.csv`. Reject a file if `scope1` is non-numeric, shipped clinker exceeds produced, a grinding unit has produced clinker, or fleet totals do not tie to the rows.
+- Heat deltas use one 10-year window and two models, so they are noisy; P06 falls by 2040, treat as noise. ERA5 is reanalysis, not station data.
+- Open-Meteo's free tier is non-commercial and rate-limited: check the licence, add retry and caching. The UI shows a "data as of" date from the latest snapshot.
 
-## 7. Edge cases
-- Grinding units have near-zero direct Scope 1, so direct CCTS is about ₹0.3 Cr each.
-- Heat deltas use one 10-year window and two models, so they are noisy. P06 falls by 2040; treat it as noise, not signal.
-- ERA5 is reanalysis, not station data; CMIP6 is one scenario.
-- Open-Meteo free tier is non-commercial and rate-limited. Check the licence before production.
-
-## 8. Open questions (owner: product unless stated)
-1. **CCTS rates.** The 2.7% / 6.6% split is unverified. ICAP reports the notified cement range as 4.7 to 7.6% for FY2025-26 to FY2026-27, per plant, against FY2023-24. Needs the Gazette rules and Nimbus's own baselines (Meera).
-2. Should the headline include CCTS at all while today's value is unknown?
-3. Is ₹1,500/tCO₂ acceptable, or should it follow an NGFS or exchange price path?
-4. Will the board want asset damage (flood, cyclone) in v1.1? Paradip and Mundra are coastal.
-5. Replace the judgement water days with Aqueduct scores: who signs off the mapping from score to lost days?
+## 6. Open questions, with the default to ship meanwhile
+1. **CCTS rates (Meera).** 2.7% / 6.6% is unverified; ICAP reports a notified range of 4.7 to 7.6%, set per plant. *Default:* keep, labelled illustrative. Needs the Gazette rules and Nimbus's FY2023-24 baselines.
+2. Headline includes CCTS? *Default:* yes, as a labelled scenario outside the Today total.
+3. ₹1,500/tCO₂, or an NGFS or exchange price path? *Default:* ₹1,500, editable in step B.
+4. Asset damage for coastal Paradip and Mundra in v1.1? *Default:* out of scope.
+5. Who signs off the Aqueduct score to lost-days mapping? *Default:* keep judgement days.

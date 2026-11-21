@@ -88,8 +88,8 @@ Checks that CSV totals match the brief, that every plant row in the JSON matches
 | `tailwind.config.js`, `src/index.css` | Oren design tokens |
 | `design.md` | Design system specification |
 | `nimbus_cement_plants.csv`, `public/` | Source CSV and the copy served for download |
-| `enrich_data.py` | Fetches Open-Meteo (ERA5, CMIP6, Flood) into the `open_meteo_*_cache.json` files and builds the first enriched JSON. Needs network |
-| `build_data.py` | Rebuilds `enriched_plants_data.json` and `assumptions.json` from the CSV and the cache files, then copies both into `src/data/`. Offline |
+| `enrich_data.py` | Early prototype script (single-year Open-Meteo fetch). Superseded by `build_data.py`, kept for reference |
+| `build_data.py` | Rebuilds `enriched_plants_data.json` and `assumptions.json` from the CSV and the cache files, then copies both into `src/data/`. Offline. The script that originally fetched the cache files is not in the repo; writing it is ticket step A2 |
 | `open_meteo_*_cache.json` | Cached Open-Meteo responses, so the data can be rebuilt without refetching |
 | `verify_audit.py` | Audit and reconciliation checks |
 | `DEVELOPER_TICKET.md` | Engineering specification |
