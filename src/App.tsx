@@ -653,9 +653,9 @@ export default function App() {
               <thead className="bg-oren-surface text-xs font-semibold text-oren-muted uppercase tracking-wider border-b border-oren-line">
                 <tr>
                   {([
-                    { key: 'plant', label: 'Plant and location', sub: '', subCls: '', cls: 'px-4 min-w-[170px] text-left sticky left-0 z-10 bg-oren-surface shadow-[1px_0_0_#D5DDE0]' },
-                    { key: 'scope1', label: 'Scope 1 (kt)', sub: clinkerAdjusted ? 'clinker-adjusted' : 'direct chimney', subCls: 'lowercase text-oren-muted', cls: 'px-2.5' },
-                    { key: 'intensity', label: 'Intensity', sub: `tCO₂/t · ${clinkerAdjusted ? 'adjusted' : 'direct'}`, subCls: 'normal-case text-oren-muted', cls: 'px-2.5' },
+                    { key: 'plant', label: 'Plant and location', sub: '', subCls: '', cls: 'px-4 min-w-[153px] text-left sticky left-0 z-10 bg-oren-surface shadow-[1px_0_0_#D5DDE0]' },
+                    { key: 'scope1', label: 'Scope 1 (kt)', sub: clinkerAdjusted ? 'clinker-adjusted' : 'direct chimney', subCls: 'lowercase text-oren-muted', cls: 'px-2.5 min-w-[112px]' },
+                    { key: 'intensity', label: 'Intensity', sub: `tCO₂/t · ${clinkerAdjusted ? 'adjusted' : 'direct'}`, subCls: 'normal-case text-oren-muted', cls: 'px-2.5 min-w-[132px]' },
                     { key: 'heat2040', label: 'Heat', sub: 'today → 2040 · API-based', subCls: 'normal-case text-oren-teal', cls: 'px-2.5 bg-orange-50/40' },
                     { key: 'water2040', label: 'Water and coastal', sub: 'today → 2040 · assumption', subCls: 'normal-case text-oren-amber', cls: 'px-2.5 bg-green-50/40' },
                     { key: 'cctsNotified', label: 'CCTS illustrative', sub: '2.7% / 6.6%', subCls: 'lowercase text-oren-amber', cls: 'px-2.5 bg-slate-100' },
@@ -674,7 +674,7 @@ export default function App() {
                         <button
                           type="button"
                           onClick={() => toggleSort(col.key)}
-                          className={`inline-flex flex-col ${col.key === 'plant' ? 'items-start' : 'items-end'} uppercase tracking-wide font-[inherit] text-right focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oren-teal rounded`}
+                          className={`inline-flex flex-col ${col.key === 'plant' ? 'items-start' : 'items-end'} uppercase tracking-wide font-[inherit] ${col.key === 'plant' ? 'text-left' : 'text-right'} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oren-teal rounded`}
                         >
                           <span className="inline-flex items-center gap-1 whitespace-normal">
                             {col.label}
@@ -712,7 +712,7 @@ export default function App() {
                           )}
                         </div>
                         <div className="text-xs text-oren-muted mt-0.5">
-                          {plant.town}, {plant.state} · ₹{plant.asset_value_inr_cr.toLocaleString()} Cr asset
+                          {plant.town}, {plant.state}
                         </div>
                       </td>
 
