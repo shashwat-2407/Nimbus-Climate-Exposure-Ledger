@@ -93,7 +93,6 @@ Checks that CSV totals match the brief, that every plant row in the JSON matches
 | `open_meteo_*_cache.json` | Cached Open-Meteo responses, so the data can be rebuilt without refetching |
 | `verify_audit.py` | Audit and reconciliation checks |
 | `DEVELOPER_TICKET.md` | Engineering specification |
-| `PROCESS_NOTE.md` | Research, assumptions, scope cuts, and where AI was wrong |
 
 `enriched_plants_data.json` exists at the repo root (read by `verify_audit.py`) and in `src/data/` (read by the app). Keep the two identical.
 
