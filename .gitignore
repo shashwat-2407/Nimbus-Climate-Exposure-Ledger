@@ -28,3 +28,16 @@ npm-debug.log*
 # Deployment
 .vercel/
 .railway/
+
+# Claude Code and test tooling
+.claude/
+.playwright/
+playwright-report/
+test-results/
+coverage/
+
+# Local working files
+*.pdf
+*.tgz
+*.bak
+*.tmp
