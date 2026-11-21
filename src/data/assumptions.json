@@ -1,5 +1,5 @@
 {
-  "version": "4.0-bias-aware-audited",
+  "version": "4.0-bias-aware",
   "status": "Bias-Aware Methodology & Assumptions Registry",
   "metadata_rules": {
     "ccts_methodology_statement": "CCTS here = emissions \u00d7 % cut \u00d7 price, with no abatement and no growth to 2040, as a placeholder pending plant baselines.",

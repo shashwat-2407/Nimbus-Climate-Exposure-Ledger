@@ -1,13 +1,14 @@
 # CLIM-101: Nimbus Climate Exposure Ledger, v1
 
-**For:** an engineer building v1 for real. **User:** Meera Iyer, Head of Sustainability, Nimbus Cement (9 plants), presenting to her board, auditor and lenders.
-**Prototype:** this repo (React 18, Vite, Tailwind, static). `verify_audit.py` holds the golden numbers below.
+**For:** an engineer building v1 for real. **User:** Meera Iyer, Head of Sustainability, Nimbus Cement (9 plants), presenting to her board. **Prototype:** this repo; `verify_audit.py` holds the golden numbers.
+
+**Start here:** the prototype works with baked-in data. Your job is to (1) move the maths into a tested module, (2) automate the data refresh, (3) add a validated plant upload, (4) make assumptions editable, (5) swap guessed water days for Aqueduct. Plain-language version: README, "For the developer".
 
 ## 1. Goal
 Answer one question: *what is our business exposure to climate events today and by 2040?* Three parts, never summed into one unlabelled number: **Heat** (data-based), **Water & coastal** (assumption), **CCTS carbon cost** (scenario). Every figure states its unit (₹ Cr per year) and its provenance.
 
 ## 2. In scope for v1
-Nine-plant ledger, Today vs 2040 bars, three component cards, attribution banner, clinker toggle, plant drawer, assumptions section, CSV download.
+Everything the prototype shows today.
 **Out of scope:** asset damage and impairment (flood, cyclone), Scope 3, GIS maps, login, multi-company, live API calls from the browser.
 
 ## 3. Build order
@@ -38,9 +39,9 @@ Plant CSV columns as in `nimbus_cement_plants.csv`. Reject files where `scope1` 
 - "View assumptions" opens an inline section, not tabs or a modal. 1280×900 renders without horizontal page scroll.
 
 ## 7. Edge cases
-- Grinding units have near-zero direct Scope 1 (intensity 0.02), so direct CCTS is about ₹0.3 Cr each. Adjusted CCTS would be higher; we do not show it.
+- Grinding units have near-zero direct Scope 1, so direct CCTS is about ₹0.3 Cr each.
 - Heat deltas use one 10-year window and two models, so they are noisy. P06 falls by 2040; treat it as noise, not signal.
-- ERA5 is reanalysis, not station data. CMIP6 HighResMIP assumes a high-emission scenario; say so.
+- ERA5 is reanalysis, not station data; CMIP6 is one scenario.
 - Open-Meteo free tier is non-commercial and rate-limited. Check the licence before production.
 
 ## 8. Open questions (owner: product unless stated)

@@ -29,6 +29,35 @@ Fleet facts: 9 plants, ₹15,450 Cr gross asset base, 23.00 MTPA capacity, 18.35
 | :---: | :---: | :---: |
 | ![Ledger](docs/screenshots/screenshot_clinker_adjusted.png) | ![Assumptions](docs/screenshots/screenshot_assumptions_panel.png) | ![Drawer](docs/screenshots/screenshot_drawer_grinding_unit.png) |
 
+## For the developer: what to do next
+
+This repo is a working prototype with the data baked in. It was built to answer one question for one company. The full spec is in [DEVELOPER_TICKET.md](DEVELOPER_TICKET.md). In plain terms, do these five things in order:
+
+1. **Move the maths out of the UI.** The formulas live inside `src/App.tsx` and the Python scripts. Put them in one small function that takes plant data and assumptions and returns the ₹ figures. Write tests that must give the numbers below.
+2. **Make the data refresh itself.** Today the weather numbers come from cached files (`open_meteo_*_cache.json`). Write a scheduled job that fetches Open-Meteo, saves a dated snapshot, and rebuilds the JSON. The app keeps reading static files, not live APIs, so numbers stay reproducible for an auditor.
+3. **Let Nimbus upload its own plants.** Replace the bundled CSV with an upload that checks the file (scope 1 must be a number, shipped clinker cannot exceed produced clinker, and so on) and says what is wrong.
+4. **Make the assumptions editable.** Margin, carbon price, CCTS rates and water days should sit in a versioned config where each change is logged, not in code.
+5. **Replace the guessed water days.** Use WRI Aqueduct scores. Someone from the business must agree how a score maps to lost days.
+
+**Do not break these rules:**
+- Heat, water and carbon stay as three separate figures. Never add them into one unlabelled number.
+- The clinker toggle changes only the Scope 1 and intensity columns. All ₹ values use direct emissions.
+- CCTS today is not known, so it stays outside the Today total.
+
+**Your tests must reproduce these numbers (₹ Cr per year):**
+
+| | Today | 2040 |
+| :--- | ---: | ---: |
+| Heat | 22.11 | 27.73 |
+| Water and coastal | 24.79 | 51.98 |
+| CCTS, illustrative rates | at most 44.74 | 44.74 |
+| CCTS, 10% stretch | at most 44.74 | 163.99 |
+| Total (illustrative / stretch) | 46.90, CCTS excluded | 124.45 / 243.70 |
+
+`python3 verify_audit.py` already checks all of these.
+
+**Open questions that need a human, not code:** the real CCTS rates for each plant (needs the BEE rules and Nimbus's FY2023-24 baselines), whether the headline should include CCTS at all, and who signs off the water-score mapping.
+
 ## Run it
 
 Requires Node 18+.

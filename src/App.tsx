@@ -575,12 +575,12 @@ export default function App() {
         </section>
 
         {/* ASSET RISK LEDGER TABLE */}
-        <section className="bg-white rounded-card border border-oren-line shadow-oren overflow-hidden" aria-label="9-plant asset risk ledger">
+        <section className="bg-white rounded-card border border-oren-line shadow-oren overflow-hidden" aria-label="9-plant climate exposure ledger">
           <div className="p-6 border-b border-oren-line flex flex-col gap-4">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
               <div>
                 <h3 className="text-xl font-display font-bold text-oren-navy">
-                  9-Plant Asset Risk Ledger
+                  9-plant exposure ledger
                 </h3>
                 <p className="text-sm text-oren-muted mt-0.5">
                   Click any factory row to inspect local physical hazards and transition calculations.

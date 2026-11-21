@@ -66,7 +66,7 @@ with open('enriched_plants_data.json', 'r') as f:
 
 # 4. Construct Comprehensive assumptions.json
 assumptions = {
-    "version": "4.0-bias-aware-audited",
+    "version": "4.0-bias-aware",
     "status": "Bias-Aware Methodology & Assumptions Registry",
     "metadata_rules": {
         "ccts_methodology_statement": "CCTS here = emissions × % cut × price, with no abatement and no growth to 2040, as a placeholder pending plant baselines.",
